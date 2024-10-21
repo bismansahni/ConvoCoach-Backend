@@ -1,0 +1,61 @@
+# Python bytecode and cache files
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+*.env
+
+# Virtual environments
+venv/
+env/
+venv.bak/
+
+# Flask instance folder
+instance/
+
+# Flask logs
+*.log
+logs/
+*.out
+*.err
+
+# Pytest cache
+.pytest_cache/
+.tox/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# MacOS
+.DS_Store
+
+# VSCode settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# Database files
+*.sqlite3
+*.db
+
+# Static files
+static/
+media/
+
+# Deployment files
+*.bak
+*.swp
+*.swo
+
+# Compiled C extensions
+*.so
