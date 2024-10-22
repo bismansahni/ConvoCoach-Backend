@@ -24,7 +24,9 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    # CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app, resources={r"/*": {"origins": "https://ai-interviewer-frontend-psi.vercel.app"}}, supports_credentials=True, allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
+
     # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # Simple route for testing
