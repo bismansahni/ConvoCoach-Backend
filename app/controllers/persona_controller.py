@@ -26,13 +26,18 @@ def get_persona_data():
     with open('candidate-data.json', 'r') as file:
         data = json.load(file)
 
+    with open('interviewer-data.json', 'r') as file:
+        interviewer_data = json.load(file)    
+
     interviewee_current_role = data['interviewee_current_role']
-    interviewer_role = data['interviewer_role']
+   
     target_company = data['target-company']
     target_company_position = data['target_company_position']
     candidate_name = data['candidate_name']
 
 
+    interviewer_role =  interviewer_data['interviewer_role']
+    
 
     print("Interviewee current role:", interviewee_current_role)
     print("Interviewer role:", interviewer_role)

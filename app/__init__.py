@@ -4,6 +4,7 @@
 from flask import Flask, request, Response, stream_with_context, url_for
 from app.routes.persona_routes import persona_bp
 from app.routes.conversation_routes import conversation_bp
+from app.routes.candidate_routes import candidate_bp
 import os
 import time
 import json
@@ -24,6 +25,7 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})
+    # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # Simple route for testing
     @app.route('/')
@@ -75,6 +77,10 @@ def create_app():
 
     # Register the conversation routes blueprint
     app.register_blueprint(conversation_bp)
+
+
+
+    app.register_blueprint(candidate_bp)
 
     # Function to print all endpoints with base URL
     def print_routes(base_url):
