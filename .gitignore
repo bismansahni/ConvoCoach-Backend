@@ -60,7 +60,7 @@ media/
 # Compiled C extensions
 *.so
 
-service-key.json
+# service-key.json
 
 downloaded-resume.pdf
 
