@@ -6,6 +6,7 @@ import random
 import json
 
 from app.controllers.conversation_controller import create_conversation
+from app.controllers.resume_download_controller import download_resume, get_persona_data, extract_summary, extract_questions
 
 # # Load environment variables from .env file
 # load_dotenv()
@@ -67,6 +68,8 @@ def create_persona():
     print("X_API_KEY:", os.getenv("X_API_KEY"))
     print("TAVUS_API_URL:", os.getenv("TAVUS_API_URL"))
 
+    download_resume()
+
     BASE_URL = os.getenv("BASE_URL")
 
     interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name = get_persona_data()
@@ -87,7 +90,10 @@ def create_persona():
     # Tavus API endpoint for creating personas
     persona_url = os.getenv("TAVUS_API_URL") + "/v2/personas"
     
-    # Build the persona payload
+   
+    
+
+
     persona_payload = {
         "persona_name": persona_name,
         # "system_prompt": ""You are {persona_name}, a {interviewer_role} from {target_company}. "
@@ -109,6 +115,8 @@ def create_persona():
         "Don't ask them in sequence; instead, intersperse them throughout the interview to maintain a natural flow: "
         f"{questions}. "
         "If the candidate says something off or irrelevant, guide them back on topic in a professional way."
+        "Avoid focusing too much on challenges; explore achievements, motivations, skills gained, and overall experiences instead. "
+        "Maintain a conversational tone, avoid repeating the candidate's statements, and adapt follow-ups based on their responses."
     ),
         "default_replica_id": "r79e1c033f",
         "layers": {
@@ -127,6 +135,7 @@ def create_persona():
         "x-api-key": os.getenv("X_API_KEY"),
         "Content-Type": "application/json"
     }
+
 
     # Make a POST request to Tavus API to create the persona
     response = requests.post(persona_url, json=persona_payload, headers=headers)
