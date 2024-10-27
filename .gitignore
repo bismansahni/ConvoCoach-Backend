@@ -59,3 +59,19 @@ media/
 
 # Compiled C extensions
 *.so
+
+service-key.json
+
+downloaded-resume.pdf
+
+candidate-resume.pdf
+
+questions.txt
+
+candidate-data.json
+
+candidate-info.json
+
+candidateinfo.txt
+
+questions.txt

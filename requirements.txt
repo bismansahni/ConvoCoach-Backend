@@ -4,3 +4,5 @@ requests
 openai
 gunicorn
 flask-cors
+firebase-admin
+PyPDF2
