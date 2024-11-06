@@ -12,6 +12,7 @@ import traceback
 from openai import OpenAI
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask_talisman import Talisman
 
 
 
@@ -26,6 +27,8 @@ def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})
     # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
+    Talisman(app)
 
     # Simple route for testing
     @app.route('/')
