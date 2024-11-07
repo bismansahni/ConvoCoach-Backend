@@ -13,6 +13,8 @@ from openai import OpenAI
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_talisman import Talisman
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+
 
 
 
@@ -22,6 +24,9 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("API_KEY")
 print("Loaded API " +OPENAI_API_KEY)
 client = OpenAI(api_key=OPENAI_API_KEY)
+
+REQUEST_COUNT = Counter('flask_request_count', 'Total number of requests', ['method', 'endpoint'])
+REQUEST_LATENCY = Histogram('flask_request_latency_seconds', 'Request latency', ['method', 'endpoint'])
 
 def create_app():
     app = Flask(__name__)
@@ -34,6 +39,22 @@ def create_app():
     @app.route('/')
     def index():
         return 'Flask server is running!'
+    
+    @app.before_request
+    def start_timer():
+        request.start_time = time.time()
+
+    @app.after_request
+    def record_metrics(response):
+        REQUEST_COUNT.labels(method=request.method, endpoint=request.path).inc()
+        if hasattr(request, 'start_time'):
+            latency = time.time() - request.start_time
+            REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(latency)
+        return response
+
+    @app.route('/metrics')
+    def metrics():
+        return Response(generate_latest(), content_type=CONTENT_TYPE_LATEST)
 
     # Route to handle chat completions
     @app.route("/chat/completions", methods=["POST"])
