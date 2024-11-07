@@ -6,3 +6,6 @@ gunicorn
 flask-cors
 firebase-admin
 PyPDF2
+werkzeug==3.0.6
+flask-talisman
+prometheus-client
