@@ -5,6 +5,7 @@ from flask import Flask, request, Response, stream_with_context, url_for
 from app.routes.persona_routes import persona_bp
 from app.routes.conversation_routes import conversation_bp
 from app.routes.candidate_routes import candidate_bp
+from app.routes.payment_routes import payment_bp
 import os
 import time
 import json
@@ -96,6 +97,8 @@ def create_app():
             print(f"CHATBOT_STEP: {traceback.format_exc()}")
             return Response(str(e), content_type="text/plain", status=500)
 
+
+    app.register_blueprint(payment_bp)
     # Register the persona routes blueprint
     app.register_blueprint(persona_bp)
 
