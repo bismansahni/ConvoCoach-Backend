@@ -36,7 +36,7 @@ def create_app():
 
    
     CORS(app, supports_credentials=True)
-    # Talisman(app)
+    Talisman(app)
 
     # Simple route for testing
     @app.route('/')
