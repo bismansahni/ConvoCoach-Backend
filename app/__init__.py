@@ -36,7 +36,7 @@ def create_app():
 
     # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-    Talisman(app)
+    # Talisman(app)
 
     # Simple route for testing
     @app.route('/')
