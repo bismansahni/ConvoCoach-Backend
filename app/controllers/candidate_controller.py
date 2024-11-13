@@ -6,6 +6,8 @@ def create_candidate_data():
     try:
         # Get the payload from the request
         data = request.json
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
 
         # Define the file path for the JSON file
         file_path = os.path.join(os.getcwd(), 'candidate-data.json')

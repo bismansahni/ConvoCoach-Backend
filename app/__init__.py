@@ -32,7 +32,7 @@ REQUEST_LATENCY = Histogram('flask_request_latency_seconds', 'Request latency', 
 def create_app():
     app = Flask(__name__)
     # CORS(app, resources={r"/*": {"origins": "*"}})
-    CORS(app, resources={r"/*": {"origins": "https://ai-interviewer-frontend-psi.vercel.app"}}, supports_credentials=True, allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
+    CORS(app, resources={r"/*": {"origins": "https://ai-interview-frontend-mu.vercel.app/"}}, supports_credentials=True, allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
 
     # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
