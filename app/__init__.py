@@ -55,6 +55,32 @@ def create_app():
     #         REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(latency)
     #     return response
 
+
+
+
+
+    @app.after_request
+    def record_metrics(response):
+    # Add CORS headers to allow all origins
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Credentials"] = "true"  # Only if you need to support credentials
+
+    # Record request metrics logic
+        try:
+            REQUEST_COUNT.labels(method=request.method, endpoint=request.path).inc()
+            if hasattr(request, 'start_time'):
+                latency = time.time() - request.start_time
+                REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(latency)
+        except Exception as e:
+        # Logging or handling any error encountered during metrics recording
+            print(f"Error in recording metrics: {e}")
+
+        return response
+
+
+
     @app.route('/metrics')
     def metrics():
         return Response(generate_latest(), content_type=CONTENT_TYPE_LATEST)
