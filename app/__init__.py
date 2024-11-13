@@ -32,10 +32,10 @@ REQUEST_LATENCY = Histogram('flask_request_latency_seconds', 'Request latency', 
 def create_app():
     app = Flask(__name__)
     # CORS(app, resources={r"/*": {"origins": "*"}})
-    CORS(app, resources={r"/*": {"origins": "https://ai-interview-frontend-mu.vercel.app/"}}, supports_credentials=True, allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
+    # CORS(app, resources={r"/*": {"origins": "https://ai-interview-frontend-mu.vercel.app/"}}, supports_credentials=True, allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
 
-    # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
-
+   
+    CORS(app, supports_credentials=True)
     # Talisman(app)
 
     # Simple route for testing
@@ -47,13 +47,13 @@ def create_app():
     def start_timer():
         request.start_time = time.time()
 
-    @app.after_request
-    def record_metrics(response):
-        REQUEST_COUNT.labels(method=request.method, endpoint=request.path).inc()
-        if hasattr(request, 'start_time'):
-            latency = time.time() - request.start_time
-            REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(latency)
-        return response
+    # @app.after_request
+    # def record_metrics(response):
+    #     REQUEST_COUNT.labels(method=request.method, endpoint=request.path).inc()
+    #     if hasattr(request, 'start_time'):
+    #         latency = time.time() - request.start_time
+    #         REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(latency)
+    #     return response
 
     @app.route('/metrics')
     def metrics():
