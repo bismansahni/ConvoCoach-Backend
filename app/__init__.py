@@ -47,13 +47,6 @@ def create_app():
     def start_timer():
         request.start_time = time.time()
 
-    # @app.after_request
-    # def record_metrics(response):
-    #     REQUEST_COUNT.labels(method=request.method, endpoint=request.path).inc()
-    #     if hasattr(request, 'start_time'):
-    #         latency = time.time() - request.start_time
-    #         REQUEST_LATENCY.labels(method=request.method, endpoint=request.path).observe(latency)
-    #     return response
 
 
 
