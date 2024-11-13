@@ -31,8 +31,11 @@ REQUEST_LATENCY = Histogram('flask_request_latency_seconds', 'Request latency', 
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "*"}})
-    # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+    # CORS(app, resources={r"/*": {"origins": "*"}})
+    # # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
+    CORS(app, supports_credentials=True)
+
 
     # Talisman(app)
 
