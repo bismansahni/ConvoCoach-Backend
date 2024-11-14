@@ -23,6 +23,24 @@ def create_payment():
     coupon_code = data.get('coupon_code', '')
 
     try:
+
+        discount_amount = 0
+        if coupon_code:
+            promotion_codes = stripe.PromotionCode.list(
+                code=coupon_code,
+                limit=1  # Assuming code uniqueness
+            )
+            if promotion_codes.data:
+                promotion_code = promotion_codes.data[0]
+                if promotion_code["coupon"]["amount_off"]:
+                    discount_amount = promotion_code["coupon"]["amount_off"]
+                elif promotion_code["coupon"]["percent_off"]:
+                    discount_amount = 1200 * (promotion_code["coupon"]["percent_off"] / 100)
+            else:
+                return jsonify({"error": "Invalid coupon code"}), 400
+
+        # Calculate final amount (1200 is just an example base amount)
+        amount = max(1200 - discount_amount, 0)
         # Create a PaymentIntent with additional customer details
         payment_intent = stripe.PaymentIntent.create(
             amount=1200,  # Adjust amount as needed based on coupon, if applicable
