@@ -51,11 +51,15 @@ def create_payment():
                     discount_amount = amount * (promotion_code["coupon"]["percent_off"] / 100)
             else:
                 return jsonify({"error": "Invalid coupon code"}), 400
+            
+        print("Discount amount:", discount_amount)    
 
         # Calculate the final amount after applying the discount
         final_amount = max(amount - discount_amount, 0)
+        print("Final amount at this point is:", final_amount)
+        final_amount=final_amount*100
         final_amount = int(final_amount)
-        final_amount=final_amount*100  # Convert to integer for Stripe
+        # final_amount=final_amount*100  # Convert to integer for Stripe
         print("Final amount after discount:", final_amount)
 
         # Create a PaymentIntent with additional customer details
@@ -85,7 +89,8 @@ def create_payment():
         print(f"Payment intent created: {payment_intent['id']}")
         return jsonify({
             'clientSecret': payment_intent['client_secret'],
-            'discount_amount': discount_amount
+            'discount_amount': discount_amount,
+            'final_amount': final_amount/100
         })
     except Exception as e:
         print(f"Error creating PaymentIntent: {e}")
