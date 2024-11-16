@@ -82,7 +82,9 @@ def create_candidate_data():
             "candidateName": candidate_name,
             "currentRole": current_role,
             "currentCompany": current_company,
-            "interviewDetails": interview_data
+            "interviewDetails": interview_data,
+            "uid": uid,
+            "interviewDocId": interview_doc_id
         }
 
         print("Combined Data:", combined_data)

@@ -30,8 +30,11 @@ def get_persona_data():
         data = json.load(file)
 
     # Extracting necessary fields from candidate data
-    uid = data.get('uid')  # UID will be used for downloading the resume
-    return uid
+    uid = data.get('uid')
+    interviewDocId=data.get('interviewDocId')
+    resumepath=[uid,interviewDocId]
+    print("interviewDocId received:",interviewDocId) # UID will be used for downloading the resume
+    return resumepath
 
 
 
@@ -40,14 +43,17 @@ def get_persona_data():
 def download_resume():
     try:
         # Extract UID from persona data
-        uid = get_persona_data()
+        resumepath = get_persona_data()
+        uid = resumepath[0]
+        interviewDocId=resumepath[1]
 
-        if not uid:
-            print("UID not found in the JSON file.")
-            return
+
+        # if not uid:
+        #     print("UID not found in the JSON file.")
+        #     return
 
         # Construct the Firebase Storage path using the UID
-        firebase_path = f'resumes/{uid}/resume.pdf'
+        firebase_path = f'resumes/{uid}/{interviewDocId}/resume.pdf'
         blob = bucket.blob(firebase_path)
 
         # Download the file to a local path
@@ -134,8 +140,6 @@ def extract_questions():
     return ai_response
   
     
-
-
 
 
 
