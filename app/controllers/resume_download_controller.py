@@ -90,7 +90,7 @@ def extract_summary():
     with open(output_path, "w") as text_file:
         text_file.write(text)
     # Print or process the extracted text
-        print(text)
+        # print(text)
     extract_questions()
 
 
@@ -132,12 +132,10 @@ def extract_questions():
     with open(output_path, "w") as file:
         file.write(ai_response)
 
-    print(ai_response)  # Print the AI's response
+    # print(ai_response)  # Print the AI's response
     return ai_response
 
-    # Return the AI's response
-    print(ai_response)
-    return ai_response
+
   
     
 

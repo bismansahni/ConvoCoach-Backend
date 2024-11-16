@@ -35,6 +35,8 @@ def get_persona_data():
     target_company = data['interviewDetails']['companyName']
     target_company_position = data['interviewDetails']['targetPosition']
     candidate_name = data['candidateName']
+    job_description = data['interviewDetails']['jobDescription']
+    print("Job description:", job_description)
 
 
     interviewer_role =  interviewer_data['interviewer_role']
@@ -46,7 +48,7 @@ def get_persona_data():
     print("Target company position:", target_company_position)
     print("Candidate name:", candidate_name)
    
-    return interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name
+    return interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name, job_description
 
 
 
@@ -72,19 +74,20 @@ def create_persona():
 
     BASE_URL = os.getenv("BASE_URL")
 
-    interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name = get_persona_data()
+    interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name, job_description = get_persona_data()
 
     persona_name = get_random_name()
     print(f"Randomly chosen persona name: {persona_name}")
 
     questions = get_questions()
-    print(f"Questions to be asked: {questions}")
+    # print(f"Questions to be asked: {questions}")
 
     print("Interviewee current role:", interviewee_current_role)
     print("Interviewer role:", interviewer_role)
     print("Target company:", target_company)
     print("Target company position:", target_company_position)
     print("Candidate name:", candidate_name)
+    print("Job description:", job_description)
     
     # return interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name
     # Tavus API endpoint for creating personas
@@ -108,6 +111,7 @@ def create_persona():
          "system_prompt": (
         f"You are {persona_name}, a {interviewer_role} from {target_company}. "
         f"The candidate is {candidate_name}, applying for the {target_company_position} role at {target_company}. "
+        f"As an interviewer you should be aware of the job description and try to tailor your question towards the specific job description which is given as: {job_description}. "
         "You are conducting a professional interview. Start by introducing yourself with a hi and hello. Let the candidate answer. Do not ask too many questions at once. Allow the candidate to respond more. It needs to feel as real to a human as possible"
         "Then, you should proceed with introducing yourself and the company you represent and the interview role we will be discussing today. Let the candidate know that you will be asking them questions about their resume and experience. Assure them that they can ask questions at any time and tell them to be themselves. Then say, before we dive into the interview do you want to say something or something that I should we aware of.Let the candidate answer. "
         "Then, ask them to tell you something about themselves. "
