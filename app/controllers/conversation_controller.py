@@ -7,6 +7,7 @@ from flask import Flask, Response, request, stream_with_context
 import time
 
 
+
 from openai import OpenAI
 
 
@@ -21,7 +22,7 @@ conversation_bp = Blueprint('conversation_bp', __name__)
 def create_conversation(persona_id,candidate_name):
     conversation_url = os.getenv("TAVUS_API_URL") + "/v2/conversations"
     conversation_payload = {
-        "replica_id": "r79e1c033f",
+        # "replica_id": "r1fbfc941b",
         "persona_id": persona_id,
         # "callback_url": "http://localhost:7192",
         "conversation_name": "Dave- Interviewer",
@@ -32,7 +33,7 @@ def create_conversation(persona_id,candidate_name):
           "custom_greeting": "Welcome in.",
         "properties": {
             "max_call_duration": 600,
-            "participant_left_timeout": 150,
+            "participant_left_timeout": 50,
         }
     }
 
@@ -57,6 +58,7 @@ def create_conversation(persona_id,candidate_name):
         print("hi. we are somewhere again")
         return (conversation_id,conversation_url), None  # Success, return conversation_id
     else:
+        print("response_json",response_json)
         return None, response_json  # Failure, return error details
 
 

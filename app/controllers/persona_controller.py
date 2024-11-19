@@ -8,8 +8,58 @@ import json
 from app.controllers.conversation_controller import create_conversation
 from app.controllers.resume_download_controller import download_resume, get_persona_data, extract_summary, extract_questions
 
-# # Load environment variables from .env file
-# load_dotenv()
+# Load environment variables from .env file
+load_dotenv()
+
+
+
+# def select_replica_id():
+#     files = ['interviewerreplicas-females.txt', 'interviewerreplicas-male.txt']
+#     chosen_file = random.choice("../"files)
+
+
+#     with open(chosen_file, 'r') as file:
+#         ids = file.read().splitlines()
+#         selected_id = random.choice(ids)
+
+#     print(f"Chosen file: {chosen_file}")
+#     print(f"Selected ID: {selected_id}")
+
+
+def select_replica_id():
+    # List of files in the parent directory
+    files = ['interviewerreplicas-females.txt', 'interviewerreplicas-male.txt']
+    chosen_file = random.choice(files)
+
+    # Construct the file path for the parent directory
+    file_path = os.path.join(chosen_file)
+
+    # Open and read the contents of the chosen file
+    with open(file_path, 'r') as file:
+        ids = file.read().splitlines()
+        selected_id = random.choice(ids)
+
+    if(chosen_file=="interviewerreplicas-females.txt"):
+        name=get_random_name("interviewer-names-female.txt")
+    else:
+        name=get_random_name("interviewer-names-male.txt")    
+
+    print(f"Chosen file: {file_path}")
+    print(f"Selected ID: {selected_id}")
+
+    return selected_id, name
+
+
+
+
+def get_random_name(filename):
+    with open(filename, 'r') as file:
+        names = file.readlines()
+        # Remove any trailing newline characters
+        names = [name.strip() for name in names]
+        print(random.choice(names))
+    return random.choice(names)
+
 
 
 def get_questions():
@@ -53,13 +103,6 @@ def get_persona_data():
 
 
 
-def get_random_name():
-    with open('interviewer-names.txt', 'r') as file:
-        names = file.readlines()
-        # Remove any trailing newline characters
-        names = [name.strip() for name in names]
-        print(random.choice(names))
-    return random.choice(names)
 
 def create_persona():
 
@@ -76,8 +119,12 @@ def create_persona():
 
     interviewee_current_role, interviewer_role, target_company, target_company_position, candidate_name, job_description = get_persona_data()
 
-    persona_name = get_random_name()
+    # persona_name = get_random_name()
+    # print(f"Randomly chosen persona name: {persona_name}")
+
+    selected_id, persona_name = select_replica_id()
     print(f"Randomly chosen persona name: {persona_name}")
+    print(f"Selected replica ID: {selected_id}")
 
     questions = get_questions()
     # print(f"Questions to be asked: {questions}")
@@ -122,7 +169,7 @@ def create_persona():
         "Avoid focusing too much on challenges; explore achievements, motivations, skills gained, and overall experiences instead. "
         "Maintain a conversational tone, avoid repeating the candidate's statements, and adapt follow-ups based on their responses."
     ),
-        "default_replica_id": "rde3b1a18f",
+        "default_replica_id": selected_id,
         "layers": {
             "llm": {
                 "model": os.getenv("MODEL"),
@@ -183,6 +230,9 @@ def create_persona():
             "error": "Failed to create persona",
             "details": response_json
         }, response.status_code 
+
+
+# select_replica_id()
 
 
 # get_questions()
