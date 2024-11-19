@@ -122,7 +122,7 @@ def create_persona():
         "Avoid focusing too much on challenges; explore achievements, motivations, skills gained, and overall experiences instead. "
         "Maintain a conversational tone, avoid repeating the candidate's statements, and adapt follow-ups based on their responses."
     ),
-        "default_replica_id": "r79e1c033f",
+        "default_replica_id": "rde3b1a18f",
         "layers": {
             "llm": {
                 "model": os.getenv("MODEL"),
