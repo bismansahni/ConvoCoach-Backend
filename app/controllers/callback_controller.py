@@ -2,10 +2,13 @@ import traceback
 
 from flask import jsonify
 
+from app.controllers.analysis_controller import start_analysis
+
 
 def tavus_callback(request):
     try:
         data = request.json
+        # print(data)
         event_type = data.get("event_type")
 
         if event_type == "application.transcription_ready":
@@ -19,6 +22,7 @@ def tavus_callback(request):
                     file.write(f"{entry['role']}: {entry['content']}\n")
 
             print("Transcription saved to transcription.txt")
+            start_analysis()
             return jsonify({"status": "Transcription saved to transcription.txt"}), 200
         else:
             return jsonify({"status": f"Unhandled event: {event_type}"}), 200
