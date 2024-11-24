@@ -24,7 +24,7 @@ def create_conversation(persona_id,candidate_name):
     conversation_payload = {
         # "replica_id": "r1fbfc941b",
         "persona_id": persona_id,
-        # "callback_url": "http://localhost:7192",
+         "callback_url": "https://s1s2qgsx-8000.usw3.devtunnels.ms/api/tavus-callback",
         "conversation_name": "Dave- Interviewer",
         # "conversational_context": (
         #     f"You are the interviewer with persona ID {persona_id}. "

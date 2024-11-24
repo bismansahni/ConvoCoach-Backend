@@ -1,7 +1,10 @@
 
 
 
-from flask import Flask, request, Response, stream_with_context, url_for
+from flask import Flask, request, Response, stream_with_context, url_for, jsonify
+
+from app.controllers.call_status_controller import call_status
+from app.routes.call_status_routes import call_status_bp
 from app.routes.persona_routes import persona_bp
 from app.routes.conversation_routes import conversation_bp
 from app.routes.candidate_routes import candidate_bp
@@ -34,7 +37,7 @@ def create_app():
     # CORS(app, resources={r"/*": {"origins": "*"}})
     # CORS(app, resources={r"/*": {"origins": "https://ai-interview-frontend-mu.vercel.app/"}}, supports_credentials=True, allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
 
-   
+
     CORS(app, supports_credentials=True)
     Talisman(app)
 
@@ -42,7 +45,7 @@ def create_app():
     @app.route('/')
     def index():
         return 'Flask server is running!'
-    
+
     @app.before_request
     def start_timer():
         request.start_time = time.time()
@@ -72,7 +75,45 @@ def create_app():
 
         return response
 
+    # Route to handle Tavus callbacks
+    # @app.route('/api/tavus-callback', methods=['POST'])
+    # def tavus_callback():
+    #     try:
+    #         # Retrieve the callback data sent by Tavus
+    #         data = request.json
+    #         print(f"Received Tavus callback data: {data}")
+    #
+    #         # Add your processing logic here, e.g., logging or updating the database
+    #         # Example: Process the event
+    #         event_type = data.get("event_type")
+    #         conversation_id = data.get("conversation_id")
+    #         print(f"Event type: {event_type}, Conversation ID: {conversation_id}")
+    #
+    #         # Return a success response
+    #         return jsonify({"status": "received"}), 200
+    #     except Exception as e:
+    #         print(f"Error processing Tavus callback: {traceback.format_exc()}")
+    #         return jsonify({"error": str(e)}), 500
 
+    @app.route('/api/tavus-callback', methods=['POST'])
+    def tavus_callback():
+        try:
+            data = request.json
+            event_type = data.get("event_type")
+
+            if event_type == "application.transcription_ready":
+                conversation_id = data.get("conversation_id")
+                transcript = data['properties'].get('transcript', [])
+                print(f"Transcription for conversation {conversation_id}:")
+                for entry in transcript:
+                    print(f"{entry['role']}: {entry['content']}")
+
+                return jsonify({"status": "transcription logged"}), 200
+            else:
+                return jsonify({"status": f"Unhandled event: {event_type}"}), 200
+        except Exception as e:
+            print(f"Error processing callback: {traceback.format_exc()}")
+            return jsonify({"error": str(e)}), 500
 
     @app.route('/metrics')
     def metrics():
@@ -125,7 +166,7 @@ def create_app():
 
     # Register the conversation routes blueprint
     app.register_blueprint(conversation_bp)
-
+    app.register_blueprint(call_status_bp)
 
 
     app.register_blueprint(candidate_bp)
