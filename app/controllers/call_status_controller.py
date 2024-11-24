@@ -11,10 +11,10 @@ def call_status():
         status = data.get("status")
         timestamp = data.get("timestamp", datetime.utcnow().isoformat())
 
-        if status == "call_joined":
+        if status == "meeting-joined-in-progress":
             sessions["active_calls"] += 1
             print(f"Call joined at {timestamp}. Active calls: {sessions['active_calls']}")
-        elif status == "call_ended":
+        elif status == "meeting-ended-successfully":
             sessions["active_calls"] = max(sessions["active_calls"] - 1, 0)
             print(f"Call ended at {timestamp}. Active calls: {sessions['active_calls']}")
 

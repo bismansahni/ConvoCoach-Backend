@@ -10,12 +10,12 @@ import time
 
 from openai import OpenAI
 
-
 import traceback
 import json
 from flask import Blueprint, jsonify
 
 print("BASE_URL:", os.getenv("BASE_URL"))
+base_url=os.getenv("BASE_URL")
 
 conversation_bp = Blueprint('conversation_bp', __name__)
 
@@ -24,7 +24,7 @@ def create_conversation(persona_id,candidate_name):
     conversation_payload = {
         # "replica_id": "r1fbfc941b",
         "persona_id": persona_id,
-         "callback_url": "https://s1s2qgsx-8000.usw3.devtunnels.ms/api/tavus-callback",
+         "callback_url": f"{base_url}/callback",
         "conversation_name": "Dave- Interviewer",
         # "conversational_context": (
         #     f"You are the interviewer with persona ID {persona_id}. "

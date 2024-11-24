@@ -5,6 +5,7 @@ from flask import Flask, request, Response, stream_with_context, url_for, jsonif
 
 from app.controllers.call_status_controller import call_status
 from app.routes.call_status_routes import call_status_bp
+from app.routes.callback_routes import callback_bp
 from app.routes.persona_routes import persona_bp
 from app.routes.conversation_routes import conversation_bp
 from app.routes.candidate_routes import candidate_bp
@@ -115,29 +116,8 @@ def create_app():
     #         print(f"Error processing callback: {traceback.format_exc()}")
     #         return jsonify({"error": str(e)}), 500
 
-    @app.route('/api/tavus-callback', methods=['POST'])
-    def tavus_callback():
-        try:
-            data = request.json
-            event_type = data.get("event_type")
+    # @app.route('/api/tavus-callback', methods=['POST'])
 
-            if event_type == "application.transcription_ready":
-                conversation_id = data.get("conversation_id")
-                transcript = data['properties'].get('transcript', [])
-                print(f"Transcription for conversation {conversation_id}:")
-
-                # Save transcription to "transcription.txt"
-                with open("transcription.txt", "w") as file:
-                    for entry in transcript:
-                        file.write(f"{entry['role']}: {entry['content']}\n")
-
-                print("Transcription saved to transcription.txt")
-                return jsonify({"status": "Transcription saved to transcription.txt"}), 200
-            else:
-                return jsonify({"status": f"Unhandled event: {event_type}"}), 200
-        except Exception as e:
-            print(f"Error processing callback: {traceback.format_exc()}")
-            return jsonify({"error": str(e)}), 500
 
 
     @app.route('/metrics')
@@ -192,6 +172,7 @@ def create_app():
     # Register the conversation routes blueprint
     app.register_blueprint(conversation_bp)
     app.register_blueprint(call_status_bp)
+    app.register_blueprint(callback_bp)
 
 
     app.register_blueprint(candidate_bp)
