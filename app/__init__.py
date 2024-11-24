@@ -95,6 +95,26 @@ def create_app():
     #         print(f"Error processing Tavus callback: {traceback.format_exc()}")
     #         return jsonify({"error": str(e)}), 500
 
+    # @app.route('/api/tavus-callback', methods=['POST'])
+    # def tavus_callback():
+    #     try:
+    #         data = request.json
+    #         event_type = data.get("event_type")
+    #
+    #         if event_type == "application.transcription_ready":
+    #             conversation_id = data.get("conversation_id")
+    #             transcript = data['properties'].get('transcript', [])
+    #             print(f"Transcription for conversation {conversation_id}:")
+    #             for entry in transcript:
+    #                 print(f"{entry['role']}: {entry['content']}")
+    #
+    #             return jsonify({"status": "transcription logged"}), 200
+    #         else:
+    #             return jsonify({"status": f"Unhandled event: {event_type}"}), 200
+    #     except Exception as e:
+    #         print(f"Error processing callback: {traceback.format_exc()}")
+    #         return jsonify({"error": str(e)}), 500
+
     @app.route('/api/tavus-callback', methods=['POST'])
     def tavus_callback():
         try:
@@ -105,15 +125,20 @@ def create_app():
                 conversation_id = data.get("conversation_id")
                 transcript = data['properties'].get('transcript', [])
                 print(f"Transcription for conversation {conversation_id}:")
-                for entry in transcript:
-                    print(f"{entry['role']}: {entry['content']}")
 
-                return jsonify({"status": "transcription logged"}), 200
+                # Save transcription to "transcription.txt"
+                with open("transcription.txt", "w") as file:
+                    for entry in transcript:
+                        file.write(f"{entry['role']}: {entry['content']}\n")
+
+                print("Transcription saved to transcription.txt")
+                return jsonify({"status": "Transcription saved to transcription.txt"}), 200
             else:
                 return jsonify({"status": f"Unhandled event: {event_type}"}), 200
         except Exception as e:
             print(f"Error processing callback: {traceback.format_exc()}")
             return jsonify({"error": str(e)}), 500
+
 
     @app.route('/metrics')
     def metrics():
