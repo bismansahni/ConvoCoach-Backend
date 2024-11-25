@@ -1,131 +1,139 @@
 
 
-
-
+#
+#
 # import os
 # from flask import request, jsonify
 # import stripe
 # from dotenv import load_dotenv
-
+#
 # load_dotenv()
-
-# def create_payment():
-#     stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-#     print("Request Headers:", request.headers)
-#     print("Request Method:", request.method)
-#     print("Request Data:", request.json)
-
-#     # Extract data from the request with defaults
-#     data = request.json
-#     print("Data: ", data)
-#     name = data.get('name', '').strip() or 'Default Name'
-#     address = data.get('address', {}) or {}
-#     billing_address = data.get('billing_address', {}) or {}
-#     coupon_code = data.get('coupon_code', '')
-#     amount = data.get('amount', '')  # Default to 0 if not provided
-#     print("Amount received hehe:", amount)
-
-#     # Convert amount to an integer to ensure correct data type for Stripe
-#     try:
-#         amount = int(amount)
-#     except ValueError:
-#         return jsonify({"error": "Invalid amount format. Amount must be a number."}), 400
-
-#     if amount <= 0:
-#         return jsonify({"error": "Amount must be greater than zero."}), 400
-
-#     print("Amount received:", amount)
-
-#     try:
-#         discount_amount = 0
-#         if coupon_code:
-#             promotion_codes = stripe.PromotionCode.list(
-#                 code=coupon_code,
-#                 limit=1  # Assuming code uniqueness
-#             )
-#             if promotion_codes.data:
-#                 promotion_code = promotion_codes.data[0]
-#                 if promotion_code["coupon"]["amount_off"]:
-#                     discount_amount = promotion_code["coupon"]["amount_off"]
-#                 elif promotion_code["coupon"]["percent_off"]:
-#                     discount_amount = amount * (promotion_code["coupon"]["percent_off"] / 100)
-#             else:
-#                 return jsonify({"error": "Invalid coupon code"}), 400
-            
-#         print("Discount amount:", discount_amount)    
-
-#         # Calculate the final amount after applying the discount
-#         final_amount = max(amount - discount_amount, 0)
-#         print("Final amount at this point is:", final_amount)
-#         final_amount=final_amount*100
-#         final_amount = int(final_amount)
-#         # final_amount=final_amount*100  # Convert to integer for Stripe
-#         print("Final amount after discount:", final_amount)
-
-#         # Create a PaymentIntent with additional customer details
-#         payment_intent = stripe.PaymentIntent.create(
-#             amount=final_amount,  # Use the calculated final amount
-#             currency='usd',
-#             automatic_payment_methods={'enabled': True},
-#             shipping={
-#                 'address': {
-#                     'line1': address.get('line1', 'Unknown'),
-#                     'city': address.get('city', 'Unknown'),
-#                     'state': address.get('state', 'Unknown'),
-#                     'postal_code': address.get('postal_code', '00000'),
-#                     'country': address.get('country', 'US'),
-#                 },
-#                 "name": name,
-#             },
-#             metadata={
-#                 'billing_address_line1': billing_address.get('line1', ''),
-#                 'billing_city': billing_address.get('city', ''),
-#                 'billing_state': billing_address.get('state', ''),
-#                 'billing_postal_code': billing_address.get('postal_code', ''),
-#                 'billing_country': billing_address.get('country', ''),
-#                 'coupon_code': coupon_code
-#             }
-#         )
-#         print(f"Payment intent created: {payment_intent['id']}")
-#         return jsonify({
-#             'clientSecret': payment_intent['client_secret'],
-#             'discount_amount': discount_amount,
-#             'final_amount': final_amount/100
-#         })
-#     except Exception as e:
-#         print(f"Error creating PaymentIntent: {e}")
-#         return jsonify(error=str(e)), 403
-
-
-
-
-
-
-
-
-
-
-# import os
-# from flask import request, jsonify
-# import stripe
-# from dotenv import load_dotenv
-
-# load_dotenv()
+#
 # def create_payment():
 #     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-#     print("Stripe API Key:", stripe.api_key)
-
+#
 #     try:
 #         session = stripe.checkout.Session.create(
+#
 #             line_items=[{"price": 'price_1QMGvEK9t9vieqbItXFMk3jW', "quantity": 1}],
 #             mode="payment",
 #             success_url="https://example.com/success",
 #             cancel_url="https://example.com/cancel",
+#             allow_promotion_codes=True,
 #         )
-#         print("Client Secret:", session.client_secret)
-#         return jsonify({"clientSecret": session.client_secret})
+#         # print("Client Secret:", session.client_secret)
+#         # return jsonify({"url": session.url}) # Return sessionId for frontend usage
+#         print("response:", session)
+#         return jsonify({"url": session.url}) # Return sessionId for frontend usage
+#
 #     except Exception as e:
+#         print("Error creating session:", e)
 #         return jsonify({"error": str(e)}), 400
+
+
+#
+#
+# import os
+# from flask import request, jsonify
+# import stripe
+# from dotenv import load_dotenv
+# from firebase_admin import auth, initialize_app, firestore
+#
+# # Load environment variables
+# load_dotenv()
+#
+# # Initialize Firebase Admin SDK
+# try:
+#     initialize_app()
+# except ValueError:
+#     pass  # Firebase already initialized
+#
+# # Initialize Firestore
+# db = firestore.client()
+#
+# def stripe_webhook():
+#     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+#     endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+#
+#     payload = request.get_data(as_text=True)
+#     sig_header = request.headers.get("Stripe-Signature")
+#
+#     try:
+#         # Verify the Stripe webhook
+#         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+#
+#         if event["type"] == "checkout.session.completed":
+#             session = event["data"]["object"]
+#             firebase_uid = session["metadata"]["firebaseUID"]
+#
+#             # Log session and user data
+#             print(f"Payment completed for UID: {firebase_uid}")
+#             print("Session details:", session)
+#
+#             # Save payment info to Firestore
+#             save_payment_to_db(firebase_uid, session)
+#
+#         return jsonify({"status": "success"}), 200
+#
+#     except stripe.error.SignatureVerificationError as e:
+#         print("Webhook signature verification failed:", e)
+#         return jsonify({"error": "Invalid signature"}), 400
+#     except Exception as e:
+#         print("Webhook error:", e)
+#         return jsonify({"error": "Webhook error"}), 400
+#
+# def create_payment():
+#     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+#
+#     try:
+#         # Retrieve and verify the Firebase ID token from the Authorization header
+#         id_token = request.headers.get("Authorization", "").replace("Bearer ", "")
+#         if not id_token:
+#             return jsonify({"error": "Missing Firebase ID token"}), 401
+#
+#         # Verify the Firebase token and extract user information
+#         decoded_token = auth.verify_id_token(id_token)
+#         firebase_uid = decoded_token.get("uid")
+#         if not firebase_uid:
+#             return jsonify({"error": "Invalid Firebase token"}), 401
+#
+#         # Create Stripe Checkout session with Firebase UID in metadata
+#         session = stripe.checkout.Session.create(
+#             line_items=[{"price": "price_1QMGvEK9t9vieqbItXFMk3jW", "quantity": 1}],
+#             mode="payment",
+#             success_url="https://example.com/success",
+#             cancel_url="https://example.com/cancel",
+#             metadata={"firebaseUID": firebase_uid},  # Attach Firebase UID
+#         )
+#
+#         # Debugging log for the session
+#         print("Stripe Checkout session created:", session)
+#
+#         # Return the Checkout session URL to the frontend
+#         return jsonify({"url": session.url})
+#
+#     except stripe.error.StripeError as e:
+#         print("Stripe error:", e)
+#         return jsonify({"error": "Payment processing error"}), 500
+#     except Exception as e:
+#         print("Unexpected error:", e)
+#         return jsonify({"error": str(e)}), 500
+#
+# def save_payment_to_db(firebase_uid, session):
+#     try:
+#         # Save payment data to Firestore
+#         user_ref = db.collection("users").document(firebase_uid)
+#         payment_data = {
+#             "stripeSessionId": session["id"],
+#             "amount_total": session["amount_total"],
+#             "currency": session["currency"],
+#             "status": session["payment_status"],  # Status (e.g., "paid")
+#             "created": session["created"],  # Timestamp
+#         }
+#         user_ref.collection("payments").add(payment_data)
+#         print(f"Payment data saved for user {firebase_uid}")
+#     except Exception as e:
+#         print("Error saving payment to database:", e)
 
 
 
@@ -134,26 +142,117 @@ import os
 from flask import request, jsonify
 import stripe
 from dotenv import load_dotenv
+from firebase_admin import auth, initialize_app, firestore
 
+# Load environment variables
 load_dotenv()
 
+# Initialize Firebase Admin SDK
+try:
+    initialize_app()
+except ValueError:
+    pass  # Firebase already initialized
+
+# Initialize Firestore
+db = firestore.client()
+
+def stripe_webhook():
+    """
+    Handle Stripe webhook events.
+    """
+    stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+    endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get("Stripe-Signature")
+
+    try:
+        # Verify the Stripe webhook
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+
+        # Handle specific event types
+        if event["type"] == "checkout.session.completed":
+            session = event["data"]["object"]
+            firebase_uid = session["metadata"].get("firebaseUID")
+
+            if not firebase_uid:
+                print("Error: firebaseUID is missing in session metadata.")
+                return jsonify({"error": "firebaseUID missing"}), 400
+
+            # Log session and user data
+            print(f"Payment completed for UID: {firebase_uid}")
+            print("Session details:", session)
+
+            # Save payment info to Firestore
+            save_payment_to_db(firebase_uid, session)
+
+        return jsonify({"status": "success"}), 200
+
+    except stripe.error.SignatureVerificationError as e:
+        print("Webhook signature verification failed:", e)
+        return jsonify({"error": "Invalid signature"}), 400
+    except Exception as e:
+        print("Webhook error:", e)
+        return jsonify({"error": "Webhook error"}), 400
+
 def create_payment():
+    """
+    Create a Stripe Checkout session for the user.
+    """
     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
     try:
+        # Retrieve and verify the Firebase ID token from the Authorization header
+        id_token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        if not id_token:
+            return jsonify({"error": "Missing Firebase ID token"}), 401
+
+        # Verify the Firebase token and extract user information
+        decoded_token = auth.verify_id_token(id_token)
+        firebase_uid = decoded_token.get("uid")
+        if not firebase_uid:
+            return jsonify({"error": "Invalid Firebase token"}), 401
+
+        # Create Stripe Checkout session with Firebase UID in metadata
         session = stripe.checkout.Session.create(
-           
-            line_items=[{"price": 'price_1QMGvEK9t9vieqbItXFMk3jW', "quantity": 1}],
+            line_items=[{"price": "price_1QMGvEK9t9vieqbItXFMk3jW", "quantity": 1}],
             mode="payment",
             success_url="https://example.com/success",
             cancel_url="https://example.com/cancel",
-            allow_promotion_codes=True,
+            metadata={"firebaseUID": firebase_uid},  # Attach Firebase UID
         )
-        # print("Client Secret:", session.client_secret)
-        # return jsonify({"url": session.url}) # Return sessionId for frontend usage
-        print("response:", session)
-        return jsonify({"url": session.url}) # Return sessionId for frontend usage
 
+        # Debugging log for the session
+        print("Stripe Checkout session created:", session)
+
+        # Return the Checkout session URL to the frontend
+        return jsonify({"url": session.url})
+
+    except stripe.error.StripeError as e:
+        print("Stripe error:", e)
+        return jsonify({"error": "Payment processing error"}), 500
     except Exception as e:
-        print("Error creating session:", e)
-        return jsonify({"error": str(e)}), 400
+        print("Unexpected error:", e)
+        return jsonify({"error": str(e)}), 500
+
+def save_payment_to_db(firebase_uid, session):
+    """
+    Save payment information to Firestore.
+    """
+    try:
+        # Save payment data to Firestore
+        user_ref = db.collection("users").document(firebase_uid)
+        payment_data = {
+            "stripeSessionId": session["id"],
+            "paymentIntentId": session.get("payment_intent"),
+            "amount_total": session["amount_total"],
+            "currency": session["currency"],
+            "status": session["payment_status"],  # Status (e.g., "paid")
+            "created": session["created"],  # Timestamp
+
+        }
+        user_ref.collection("payments").add(payment_data)
+        print(f"Payment data saved for user {firebase_uid}")
+    except Exception as e:
+        print("Error saving payment to database:", e)
+        return jsonify({"error": "Database error"}), 500

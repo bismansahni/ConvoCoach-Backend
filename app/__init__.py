@@ -1,6 +1,4 @@
 
-
-
 from flask import Flask, request, Response, stream_with_context, url_for, jsonify
 
 from app.controllers.call_status_controller import call_status
@@ -118,6 +116,32 @@ def create_app():
 
     # @app.route('/api/tavus-callback', methods=['POST'])
 
+    # @app.route('/stripe_webhook', methods=['POST'])
+    # def stripe_webhook():
+    #     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+    #     payload = request.get_data(as_text=True)
+    #     sig_header = request.headers.get("Stripe-Signature")
+    #
+    #     try:
+    #         # Verify webhook signature
+    #         event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    #
+    #         # Handle the event
+    #         if event['type'] == 'checkout.session.completed':
+    #             session = event['data']['object']
+    #             print("Payment completed session:", session)
+    #             # Further processing
+    #
+    #         return jsonify({"status": "success"}), 200
+    #
+    #     except stripe.error.SignatureVerificationError as e:
+    #         print("Webhook signature verification failed:", e)
+    #         return jsonify({"error": "Invalid signature"}), 400
+    #     except Exception as e:
+    #         print("Webhook error:", e)
+    #         return jsonify({"error": str(e)}), 400
+
+
 
 
     @app.route('/metrics')
@@ -188,6 +212,8 @@ def create_app():
     # Get the base URL from environment variables, default to 'http://localhost:5000' if not set
     base_url = os.getenv('BASE_URL', 'http://localhost:5000')
     print(f"Loaded BASE_URL: {base_url}")
+
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
     # Print all endpoints before returning the app
     print_routes(base_url)
