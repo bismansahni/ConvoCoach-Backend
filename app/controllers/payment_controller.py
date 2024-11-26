@@ -219,6 +219,7 @@ def create_payment():
             mode="payment",
             success_url="https://example.com/success",
             cancel_url="https://example.com/cancel",
+            allow_promotion_codes=True,
             metadata={"firebaseUID": firebase_uid},  # Attach Firebase UID
         )
 
