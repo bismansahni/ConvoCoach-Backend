@@ -223,6 +223,8 @@ def create_payment():
             metadata={"firebaseUID": firebase_uid},  # Attach Firebase UID
         )
 
+        #added promotion codes properly
+
         # Debugging log for the session
         print("Stripe Checkout session created:", session)
 
