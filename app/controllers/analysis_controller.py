@@ -13,7 +13,7 @@ def start_analysis():
         interview_doc_id = candidate_data["interviewDocId"]
 
         # Read the transcription from the file
-        with open("transcription.txt", "r") as file:
+        with open("output.json", "r") as file:
             transcription = file.read()
 
         # Initialize Firebase Admin SDK

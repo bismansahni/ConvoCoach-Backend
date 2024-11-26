@@ -3,6 +3,7 @@ import traceback
 from flask import jsonify
 
 from app.controllers.analysis_controller import start_analysis
+from app.controllers.format_controller import transcription_formatter
 
 
 def tavus_callback(request):
@@ -22,6 +23,7 @@ def tavus_callback(request):
                     file.write(f"{entry['role']}: {entry['content']}\n")
 
             print("Transcription saved to transcription.txt")
+            transcription_formatter()
             start_analysis()
             return jsonify({"status": "Transcription saved to transcription.txt"}), 200
         else:
