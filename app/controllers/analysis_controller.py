@@ -3,7 +3,7 @@ from firebase_admin import credentials, firestore
 import traceback
 import json
 
-def start_analysis():
+def save_transcription_to_database():
     try:
         # Load candidate data from JSON
         with open("candidate-data.json", "r") as file:
