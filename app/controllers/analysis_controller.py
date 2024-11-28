@@ -14,7 +14,7 @@ def start_analysis():
 
         # Read the transcription from the file
         with open("output.json", "r") as file:
-            transcription = file.read()
+            transcription = json.load(file)
 
         # Initialize Firebase Admin SDK
         if not firebase_admin._apps:
