@@ -81,3 +81,9 @@ transcription.txt
 output.json
 
 transcript-updated-response.txt
+
+recordings/
+
+.cadence/
+
+controllers/output.mp3

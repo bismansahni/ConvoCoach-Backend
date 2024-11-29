@@ -17,11 +17,20 @@ openai.api_key = api_key
 
 
 # Initialize Firebase with your service account credentials
-cred = credentials.Certificate("service-key.json")
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'ai-interviewer-9aeea.appspot.com'
-})
+# cred = credentials.Certificate("service-key.json")
+# firebase_admin.initialize_app(cred, {
+#     'storageBucket': 'ai-interviewer-9aeea.appspot.com'
+# })
+#
+# bucket = storage.bucket()
 
+if not firebase_admin._apps:
+    cred = credentials.Certificate("service-key.json")  # Path to your service account file
+    firebase_admin.initialize_app(cred, {
+        'storageBucket': 'ai-interviewer-9aeea.appspot.com'  # Your Firebase Storage bucket name
+    })
+
+# Firebase Storage bucket
 bucket = storage.bucket()
 
 def get_persona_data():

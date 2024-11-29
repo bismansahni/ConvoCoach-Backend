@@ -10,3 +10,7 @@ werkzeug==3.0.6
 flask-talisman
 prometheus-client
 stripe>=11.0.0
+torch
+whisper @ git+https://github.com/openai/whisper.git
+ffmpeg-python
+librosa

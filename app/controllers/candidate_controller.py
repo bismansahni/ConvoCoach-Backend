@@ -31,7 +31,7 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 
 
-#TODO add interview status updates
+
 def create_candidate_data():
     try:
         # Get the payload from the request

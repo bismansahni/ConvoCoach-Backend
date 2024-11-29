@@ -4,7 +4,7 @@ from flask import request, jsonify
 from dotenv import load_dotenv
 import random
 import json
-
+from app.controllers.firebase_config import db
 from app.controllers.conversation_controller import create_conversation
 from app.controllers.resume_download_controller import download_resume, get_persona_data, extract_summary, extract_questions
 

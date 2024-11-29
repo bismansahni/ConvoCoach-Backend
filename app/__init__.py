@@ -2,6 +2,7 @@
 from flask import Flask, request, Response, stream_with_context, url_for, jsonify
 
 from app.controllers.call_status_controller import call_status
+from app.routes.additional_transcription_routes import additional_transcription_bp
 from app.routes.call_status_routes import call_status_bp
 from app.routes.callback_routes import callback_bp
 from app.routes.persona_routes import persona_bp
@@ -17,6 +18,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_talisman import Talisman
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from app.controllers.firebase_config import db
 
 
 
@@ -198,7 +200,7 @@ def create_app():
     app.register_blueprint(call_status_bp)
     app.register_blueprint(callback_bp)
 
-
+    app.register_blueprint(additional_transcription_bp)
     app.register_blueprint(candidate_bp)
 
     # Function to print all endpoints with base URL

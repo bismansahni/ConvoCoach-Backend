@@ -2,6 +2,8 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import traceback
 import json
+from app.controllers.firebase_config import db
+
 
 def save_transcription_to_database():
     try:
@@ -17,11 +19,11 @@ def save_transcription_to_database():
             transcription = json.load(file)
 
         # Initialize Firebase Admin SDK
-        if not firebase_admin._apps:
-            cred = credentials.Certificate("service-key.json")
-            firebase_admin.initialize_app(cred)
-
-        db = firestore.client()
+        # if not firebase_admin._apps:
+        #     cred = credentials.Certificate("service-key.json")
+        #     firebase_admin.initialize_app(cred)
+        #
+        # db = firestore.client()
 
         # Define the document reference in Firestore
         analysis_ref = db.collection("users").document(uid).collection("interviewDetails").document(interview_doc_id).collection("analysis")
