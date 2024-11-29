@@ -14,4 +14,3 @@ torch
 ffmpeg-python
 librosa
 textblob
-vosk
