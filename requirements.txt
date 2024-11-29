@@ -14,3 +14,4 @@ torch
 openai-whisper
 ffmpeg-python
 librosa
+textblob
