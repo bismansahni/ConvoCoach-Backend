@@ -11,7 +11,7 @@ flask-talisman
 prometheus-client
 stripe>=11.0.0
 torch
-openai-whisper
 ffmpeg-python
 librosa
 textblob
+vosk
