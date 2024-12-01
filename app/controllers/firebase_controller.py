@@ -15,7 +15,21 @@ def login_user():
 
         # Verify the ID token using Firebase Admin SDK
         decoded_token = auth.verify_id_token(id_token)
-        uid = decoded_token.get('uid')  # Get the user's unique ID
+        uid = decoded_token.get('uid')
+
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            return jsonify({"error": "User does not exist in Firestore"}), 404
+
+        user_data = user_doc.to_dict()
+        if not user_data.get('isEmailVerified', False):
+            return jsonify({
+                "error": "Email not verified",
+                "message": "Please verify your email before logging in."
+            }), 403
+
 
         # Optionally, fetch additional user details from Firebase
         user = auth.get_user(uid)
@@ -55,6 +69,32 @@ def register_user():
         })
 
         return jsonify({"message": "User registered successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+def verify_email():
+    try:
+        # Parse the request body
+        data = request.json
+        uid = data.get('uid')  # User's UID
+
+        if not uid:
+            return jsonify({"error": "Missing uid"}), 400
+
+        # Check if the user exists in Firestore
+        user_ref = db.collection('users').document(uid)
+        user = user_ref.get()
+
+        if not user.exists:
+            return jsonify({"error": "User not found"}), 404
+
+        # Update the email verification flag
+        user_ref.update({"isEmailVerified": True})
+
+        return jsonify({"message": "Email verification successful"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
