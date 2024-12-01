@@ -5,6 +5,7 @@ from app.controllers.call_status_controller import call_status
 from app.routes.additional_transcription_routes import additional_transcription_bp
 from app.routes.call_status_routes import call_status_bp
 from app.routes.callback_routes import callback_bp
+from app.routes.firebase_routes import firebase_bp
 from app.routes.persona_routes import persona_bp
 from app.routes.conversation_routes import conversation_bp
 from app.routes.candidate_routes import candidate_bp
@@ -199,7 +200,7 @@ def create_app():
     app.register_blueprint(conversation_bp)
     app.register_blueprint(call_status_bp)
     app.register_blueprint(callback_bp)
-
+    app.register_blueprint(firebase_bp)
     app.register_blueprint(additional_transcription_bp)
     app.register_blueprint(candidate_bp)
 
