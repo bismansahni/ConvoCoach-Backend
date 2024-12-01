@@ -6,31 +6,75 @@ import os
 import subprocess
 from threading import Thread
 
+import openai
+from openai import OpenAI
+
 
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 
-# Initialize Vosk model
- # Path to your Vosk model directory
+#
+# openai.api_key = os.getenv("API_KEY")
+
+client=OpenAI(api_key=os.environ.get("API_KEY"), )
+
 
 # Define upload folder
 UPLOAD_FOLDER = "./recordings"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Initialize Firebase
+
 if not firebase_admin._apps:
-    cred = credentials.Certificate("service-key.json")  # Path to your service account file
+    cred = credentials.Certificate("service-key.json")
     firebase_admin.initialize_app(cred, {
-        'storageBucket': 'ai-interviewer-9aeea.appspot.com'  # Your Firebase Storage bucket name
+        'storageBucket': 'ai-interviewer-9aeea.appspot.com'
     })
 
-# Initialize Firestore client
+
 db = firestore.client()
 
-# Initialize Firebase Storage bucket (this will be shared across your app)
-bucket = storage.bucket()  # This should now work because the bucket name is passed during initialization
+
+bucket = storage.bucket()
+
+#
+# def upload_recording():
+#     try:
+#         if "file" not in request.files:
+#             return jsonify({"error": "No file part in the request"}), 400
+#
+#         file = request.files["file"]
+#         interview_id = request.form.get("interviewId")
+#
+#         if not interview_id:
+#             return jsonify({"error": "Interview ID is required."}), 400
+#
+#         if file.filename == "":
+#             return jsonify({"error": "No selected file."}), 400
+#
+#         # Save and convert file
+#         filename = secure_filename(f"{interview_id}.webm")
+#         file_path = os.path.join(UPLOAD_FOLDER, filename)
+#         file.save(file_path)
+#
+#         converted_path = os.path.join(UPLOAD_FOLDER, f"{interview_id}.mp3")
+#         subprocess.run(
+#             ["ffmpeg", "-i", file_path, "-acodec", "libmp3lame", converted_path],
+#             check=True
+#         )
+#         os.remove(file_path)
+#
+#         # Start transcription and analysis in a separate thread
+#         thread = Thread(target=process_transcription, args=(interview_id,))
+#         thread.start()
+#
+#         return jsonify({"message": "Recording uploaded and converted successfully.", "filePath": converted_path}), 200
+#
+#     except Exception as e:
+#         return jsonify({"error": "Failed to upload or convert recording.", "details": str(e)}), 500
+#
+
 
 
 def upload_recording():
@@ -47,29 +91,67 @@ def upload_recording():
         if file.filename == "":
             return jsonify({"error": "No selected file."}), 400
 
-        # Save and convert file
+        # Save the file in its original format
         filename = secure_filename(f"{interview_id}.webm")
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(file_path)
-
-        converted_path = os.path.join(UPLOAD_FOLDER, f"{interview_id}.mp3")
-        subprocess.run(
-            ["ffmpeg", "-i", file_path, "-acodec", "libmp3lame", converted_path],
-            check=True
-        )
-        os.remove(file_path)
 
         # Start transcription and analysis in a separate thread
         thread = Thread(target=process_transcription, args=(interview_id,))
         thread.start()
 
-        return jsonify({"message": "Recording uploaded and converted successfully.", "filePath": converted_path}), 200
+        return jsonify({"message": "Recording uploaded successfully.", "filePath": file_path}), 200
 
     except Exception as e:
-        return jsonify({"error": "Failed to upload or convert recording.", "details": str(e)}), 500
+        return jsonify({"error": "Failed to upload the recording.", "details": str(e)}), 500
 
+
+
+
+
+
+
+
+
+
+def process_transcription(interview_id):
+    try:
+        with open(f"recordings/{interview_id}.webm", "rb") as audio_file:
+            transcription = client.audio.transcriptions.create(
+                model="whisper-1",
+                language="en",
+                file=audio_file
+            )
+            print("the statement is received from openai:")
+            print(transcription.text)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+# def process_transcription(interview_id):
+#     try:
+#         file_path = os.path.join("recordings", f"{interview_id}.mp3")
+#         with open(file_path, "rb") as audio_file:
+#             transcription = openai.Audio.transcribe(
+#                 model="whisper-1",
+#                 file=audio_file
+#             )
+#             print(transcription['text'])
+#
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
 #
 
+
+
+
+
+#
+# def save_proper_analysis_to_database(interview_id, transcription, confidence_score, words_per_minute, filler_count,
+#                                      avg_pitch, avg_loudness, sentiment):
+#     print("hi")
+#
 
 
 
@@ -149,13 +231,13 @@ def upload_recording():
 
 
 
-def process_transcription(interview_id):
-    print("hello")
-
-
-def save_proper_analysis_to_database(interview_id, transcription, confidence_score, words_per_minute, filler_count,
-                                     avg_pitch, avg_loudness, sentiment):
-    print("hi")
+# def process_transcription(interview_id):
+#     print("hello")
+#
+#
+# def save_proper_analysis_to_database(interview_id, transcription, confidence_score, words_per_minute, filler_count,
+#                                      avg_pitch, avg_loudness, sentiment):
+#     print("hi")
 
 #
 # # Function to save analysis to Firestore
