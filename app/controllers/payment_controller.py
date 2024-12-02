@@ -294,19 +294,55 @@ def increment_credit_counter(uid, price_id):
         return jsonify({"error": str(e)}), 500
 
 
+#
+# def save_payment_to_db(firebase_uid, session,price_id):
+#     """
+#     Save payment information to Firestore.
+#     """
+#     try:
+#         # Save payment data to Firestore
+#         user_ref = db.collection("users").document(firebase_uid)
+#         payments_ref = user_ref.collection("payments")
+#         existing_payment = payments_ref.where("stripeSessionId", "==", session["id"]).get()
+#         if existing_payment:
+#             print(f"Payment already exists for session ID: {session['id']}")
+#             # return
+#         payment_data = {
+#             "stripeSessionId": session["id"],
+#             "paymentIntentId": session.get("payment_intent"),
+#             "amount_total": session["amount_total"],
+#             "currency": session["currency"],
+#             "status": session["payment_status"],  # Status (e.g., "paid")
+#             "created": session["created"],  # Timestamp
+#
+#         }
+#         user_ref.collection("payments").add(payment_data)
+#
+#         print(f"Payment data saved for user {firebase_uid}")
+#         print(f"Calling increment_credit_counter with UID: {firebase_uid}, Price ID: {price_id}")
+#         return increment_credit_counter(firebase_uid, price_id)
+#     except Exception as e:
+#         print("Error saving payment to database:", e)
+#         return jsonify({"error": "Database error"}), 500
 
-def save_payment_to_db(firebase_uid, session,price_id):
+
+def save_payment_to_db(firebase_uid, session, price_id):
     """
-    Save payment information to Firestore.
+    Save payment information to Firestore and increment user credits.
     """
     try:
-        # Save payment data to Firestore
+        # Reference to user payments collection
         user_ref = db.collection("users").document(firebase_uid)
         payments_ref = user_ref.collection("payments")
+
+        # Check for existing payment with the same Stripe session ID
         existing_payment = payments_ref.where("stripeSessionId", "==", session["id"]).get()
-        if existing_payment:
+        if existing_payment and len(existing_payment) > 0:  # If payment already exists
             print(f"Payment already exists for session ID: {session['id']}")
-            # return
+            # Call increment_credit_counter anyway
+            return increment_credit_counter(firebase_uid, price_id)
+
+        # Prepare payment data
         payment_data = {
             "stripeSessionId": session["id"],
             "paymentIntentId": session.get("payment_intent"),
@@ -314,13 +350,15 @@ def save_payment_to_db(firebase_uid, session,price_id):
             "currency": session["currency"],
             "status": session["payment_status"],  # Status (e.g., "paid")
             "created": session["created"],  # Timestamp
-
         }
-        user_ref.collection("payments").add(payment_data)
 
+        # Add new payment data to Firestore
+        payments_ref.add(payment_data)
         print(f"Payment data saved for user {firebase_uid}")
-        print(f"Calling increment_credit_counter with UID: {firebase_uid}, Price ID: {price_id}")
+
+        # Increment user credits
         return increment_credit_counter(firebase_uid, price_id)
+
     except Exception as e:
         print("Error saving payment to database:", e)
         return jsonify({"error": "Database error"}), 500
