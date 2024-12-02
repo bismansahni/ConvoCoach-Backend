@@ -225,7 +225,7 @@ def save_proper_analysis_to_database(interview_id, transcription, confidence_sco
         }
 
         # Save analysis data to Firestore
-        interview_ref.collection("analysis").document(interview_id).set(analysis_data)
+        interview_ref.collection("analysis").document("voice_details").set(analysis_data)
         print(f"Analysis which is the new one for Interview ID {interview_id} saved to Firestore.")
 
         delete_specific_recording(interview_id)
