@@ -227,6 +227,7 @@ def create_payment():
 
         data = request.get_json()
         price_id = data.get("priceId")
+        print("Price ID received:", price_id)
         if not price_id:
             return jsonify({"error": "Missing Price ID"}), 400
 
@@ -275,9 +276,11 @@ def increment_credit_counter(uid, price_id):
 
         # Determine credits to add based on price_id
         if price_id == "price_1QRMufK9t9vieqbI3UhTDC24":
+            print("Processing 5 credits")
             new_credits = current_credits + 5
             print("new_credits",new_credits)
         elif price_id == "price_1QRMyBK9t9vieqbIxSB9Hunu":
+            print("Processing 5 credits")
             new_credits = current_credits + 10
             print("new_credits", new_credits)
         else:
