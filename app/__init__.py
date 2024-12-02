@@ -5,6 +5,7 @@ from app.controllers.call_status_controller import call_status
 from app.routes.additional_transcription_routes import additional_transcription_bp
 from app.routes.call_status_routes import call_status_bp
 from app.routes.callback_routes import callback_bp
+from app.routes.credit_routes import credit_bp
 from app.routes.firebase_routes import firebase_bp
 from app.routes.persona_routes import persona_bp
 from app.routes.conversation_routes import conversation_bp
@@ -203,6 +204,7 @@ def create_app():
     app.register_blueprint(firebase_bp)
     app.register_blueprint(additional_transcription_bp)
     app.register_blueprint(candidate_bp)
+    app.register_blueprint(credit_bp)
 
     # Function to print all endpoints with base URL
     def print_routes(base_url):

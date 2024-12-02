@@ -65,6 +65,7 @@ def register_user():
         db.collection('users').document(uid).set({
             'email': email,
             'isEmailVerified': False,
+            'credits': 2,
             'createdAt': firestore.SERVER_TIMESTAMP
         })
 
