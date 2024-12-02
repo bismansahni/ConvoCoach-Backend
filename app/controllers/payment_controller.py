@@ -213,9 +213,14 @@ def create_payment():
         if not firebase_uid:
             return jsonify({"error": "Invalid Firebase token"}), 401
 
+        data = request.get_json()
+        price_id = data.get("priceId")
+        if not price_id:
+            return jsonify({"error": "Missing Price ID"}), 400
+
         # Create Stripe Checkout session with Firebase UID in metadata
         session = stripe.checkout.Session.create(
-            line_items=[{"price": "price_1QMGvEK9t9vieqbItXFMk3jW", "quantity": 1}],
+            line_items=[{"price":  price_id, "quantity": 1}],
             mode="payment",
             success_url="https://example.com/success",
             cancel_url="https://example.com/cancel",
@@ -245,6 +250,11 @@ def save_payment_to_db(firebase_uid, session):
     try:
         # Save payment data to Firestore
         user_ref = db.collection("users").document(firebase_uid)
+        payments_ref = user_ref.collection("payments")
+        existing_payment = payments_ref.where("stripeSessionId", "==", session["id"]).get()
+        if existing_payment:
+            print(f"Payment already exists for session ID: {session['id']}")
+            return
         payment_data = {
             "stripeSessionId": session["id"],
             "paymentIntentId": session.get("payment_intent"),
