@@ -212,6 +212,7 @@ def create_payment():
     Create a Stripe Checkout session for the user.
     """
     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+    FRONTEND_URL = os.getenv("FRONTEND_URL")
 
     try:
         # Retrieve and verify the Firebase ID token from the Authorization header
@@ -235,8 +236,8 @@ def create_payment():
         session = stripe.checkout.Session.create(
             line_items=[{"price":  price_id, "quantity": 1}],
             mode="payment",
-            success_url="https://example.com/success",
-            cancel_url="https://example.com/cancel",
+            success_url=f"{FRONTEND_URL}/dashboard?success=true",
+            cancel_url = f"{FRONTEND_URL}/dashboard/Payments",
             allow_promotion_codes=True,
             metadata={"firebaseUID": firebase_uid},  # Attach Firebase UID
         )
