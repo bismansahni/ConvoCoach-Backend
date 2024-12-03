@@ -211,7 +211,7 @@ def clean_metrics(ai_response, uid, interview_doc_id):
     try:
         cleaned_response = ai_response.replace("```json", "").replace("```", "").strip()
         # Parse the AI response JSON
-        analysis_data = json.loads(ai_response)["analysis"]
+        analysis_data = json.loads(cleaned_response)["analysis"]
 
         # # Save the analysis data to Firestore
         # analysis_ref = db.collection("users").document(uid).collection("interviewDetails").document(interview_doc_id).collection("analysis").collection("ai_feedback")
