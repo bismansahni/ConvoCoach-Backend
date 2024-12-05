@@ -72,7 +72,7 @@ def register_user():
         # Add user to Firestore
         db.collection('users').document(uid).set({
             'email': email,
-            'isEmailVerified': False,
+            'isEmailVerified': True,
             'credits': int(os.getenv("INITIAL_CREDITS")),
             'createdAt': firestore.SERVER_TIMESTAMP
         })
