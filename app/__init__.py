@@ -49,6 +49,16 @@ def create_app():
     def index():
         return 'Flask server is running!'
 
+    @app.route('/healthz', methods=['GET'])
+    def healthz():
+        """Health check endpoint."""
+        try:
+            # You can add additional health checks here if needed, e.g., database connectivity.
+            return jsonify({"status": "healthy"}), 200
+        except Exception as e:
+            # In case of any failure, return an error response.
+            return jsonify({"status": "unhealthy", "error": str(e)}), 500
+
     @app.before_request
     def start_timer():
         request.start_time = time.time()
