@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.controllers.firebase_controller import login_user, register_user, verify_email
+from app.controllers.firebase_controller import login_user, register_user, verify_email, personal_feedback
 
 firebase_bp = Blueprint('firebase_controller', __name__)
 
@@ -18,3 +18,11 @@ def signup_route():
 @firebase_bp.route('/verify-email', methods=['POST'])
 def email_verification():
     return verify_email()
+
+
+
+
+
+@firebase_bp.route('/register_personal_feedback', methods=['POST'])
+def personal_feedback_register():
+    return personal_feedback()
