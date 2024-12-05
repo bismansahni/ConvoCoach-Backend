@@ -144,7 +144,7 @@ def personal_feedback():
         interview_ref = user_ref.collection('interviewDetails').document(interview_id)
         interview_ref.set({
             "hasFeedback": True,
-            "lastUpdated": datetime.now(timezone.utc)  # Correct usage
+            # "lastUpdated": datetime.now(timezone.utc)  # Correct usage
         }, merge=True)
 
         return jsonify({"message": "Feedback saved successfully"}), 200
