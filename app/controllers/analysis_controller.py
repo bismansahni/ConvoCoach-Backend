@@ -187,6 +187,26 @@ def clean_metrics(ai_response, uid, interview_doc_id):
         return {"error": str(e)}, 500
 
 
+def performance_graph_populate(uid, filler_words_count, confidence_level, clarity_score):
+        try:
+            # Reference to the user's performance_graph collection
+            performance_graph_ref = db.collection("users").document(uid).collection("performance_graph")
+
+            # Document data format
+            performance_data = {
+                "timestamp": firestore.SERVER_TIMESTAMP,  # Server-generated timestamp
+                "fillerWords": filler_words_count,
+                "confidence": confidence_level,
+                "clarity": clarity_score,
+            }
+
+            # Add a new document for this entry, letting Firestore handle the timestamp
+            performance_graph_ref.add(performance_data)
+
+            print("Performance graph updated successfully!")
+        except Exception as e:
+            print(f"Error populating performance graph: {traceback.format_exc()}")
+            return {"error": str(e)}, 500
 
 def update_overall_metrics(analysis_data, uid, interview_doc_id):
     try:
@@ -259,10 +279,9 @@ def update_overall_metrics(analysis_data, uid, interview_doc_id):
         metrics_ref.document('metrics_summary').set(overall_metrics)
 
         print("Overall metrics updated successfully in the collection!")
+
+        performance_graph_populate(uid,analysis_data["filler_words_count"], analysis_data["confidence_level"]["score"],analysis_data["clarity_score"])
     except Exception as e:
         print(f"Error updating overall metrics: {traceback.format_exc()}")
         return {"error": str(e)}, 500
-
-
-
 
