@@ -130,7 +130,7 @@ def increment_credit_counter(uid, price_id):
         # Fetch the user document
         user_ref = db.collection('users').document(uid)
         user_doc = user_ref.get()
-        print("jereeeee")
+
         if not user_doc.exists:
             print(f"User document does not exist for UID: {uid}")
             return jsonify({"error": "User document not found"}), 404
@@ -138,18 +138,7 @@ def increment_credit_counter(uid, price_id):
         # Retrieve current credits
         current_credits = user_doc.to_dict()['credits']  # Guaranteed to exist
 
-        # Determine credits to add based on price_id
-        # if price_id == "price_1QRMufK9t9vieqbI3UhTDC24":
-        #     print("Processing 5 credits")
-        #     new_credits = current_credits + 5
-        #     print("new_credits",new_credits)
-        # elif price_id == "price_1QRMyBK9t9vieqbIxSB9Hunu":
-        #     print("Processing 5 credits")
-        #     new_credits = current_credits + 10
-        #     print("new_credits", new_credits)
-        # else:
-        #     print(f"Invalid price_id: {price_id}")
-        #     return jsonify({"error": "Invalid price ID"}), 400
+
 
         if price_id == os.getenv("BASIC_PLAN"):
             print("Processing BASIC_PLAN credits")
@@ -172,37 +161,6 @@ def increment_credit_counter(uid, price_id):
         print(f"An error occurred while incrementing credits: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-
-#
-# def save_payment_to_db(firebase_uid, session,price_id):
-#     """
-#     Save payment information to Firestore.
-#     """
-#     try:
-#         # Save payment data to Firestore
-#         user_ref = db.collection("users").document(firebase_uid)
-#         payments_ref = user_ref.collection("payments")
-#         existing_payment = payments_ref.where("stripeSessionId", "==", session["id"]).get()
-#         if existing_payment:
-#             print(f"Payment already exists for session ID: {session['id']}")
-#             # return
-#         payment_data = {
-#             "stripeSessionId": session["id"],
-#             "paymentIntentId": session.get("payment_intent"),
-#             "amount_total": session["amount_total"],
-#             "currency": session["currency"],
-#             "status": session["payment_status"],  # Status (e.g., "paid")
-#             "created": session["created"],  # Timestamp
-#
-#         }
-#         user_ref.collection("payments").add(payment_data)
-#
-#         print(f"Payment data saved for user {firebase_uid}")
-#         print(f"Calling increment_credit_counter with UID: {firebase_uid}, Price ID: {price_id}")
-#         return increment_credit_counter(firebase_uid, price_id)
-#     except Exception as e:
-#         print("Error saving payment to database:", e)
-#         return jsonify({"error": "Database error"}), 500
 
 
 def save_payment_to_db(firebase_uid, session, price_id):
