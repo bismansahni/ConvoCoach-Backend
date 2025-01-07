@@ -171,12 +171,12 @@ def create_persona():
     ),
         "default_replica_id": selected_id,
         "layers": {
-            "llm": {
-                "model": os.getenv("MODEL"),
-                  "base_url": BASE_URL,
-                #   "base_url": "https://8526-98-191-174-30.ngrok-free.app",
-                "api_key": os.getenv("API_KEY")
-            },
+            # "llm": {
+            #     "model": os.getenv("MODEL"),
+            #       "base_url": BASE_URL,
+            #     #   "base_url": "https://8526-98-191-174-30.ngrok-free.app",
+            #     "api_key": os.getenv("API_KEY")
+            # },
             "vqa": {"enable_vision": "true"}
             # "stt": {
             #     "participant_pause_sensitivity": "low",
