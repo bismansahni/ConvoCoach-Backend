@@ -1,5 +1,6 @@
 from itertools import count
 import firebase_admin
+import psutil
 from firebase_admin import credentials, firestore
 import traceback, os
 import json
@@ -42,6 +43,8 @@ def save_transcription_to_database():
 
 def create_analysis_metrics(transcription, uid, interview_doc_id):
     try:
+        cpu_before = psutil.cpu_percent(interval=1)
+        mem_before = psutil.virtual_memory().used / (1024 ** 2)
         prompt = (
             "For the given transcription of an interview, provide a detailed analysis by referring to the interviewee as you/yours to make the feedback sound natural and conversational. Include the following:\n"
             "1. Overall filler word count.\n"
@@ -157,10 +160,18 @@ def create_analysis_metrics(transcription, uid, interview_doc_id):
 
         response = openai.chat.completions.create(
              model="gpt-4o",
-            messages=messages
+            messages=messages,
+        response_format = {"type": "json_object"},
         )
 
         ai_response =  response.choices[0].message.content
+
+        cpu_after = psutil.cpu_percent(interval=1)
+        mem_after = psutil.virtual_memory().used / (1024 ** 2)
+
+        print(f"CPU Usage: Before={cpu_before}%, After={cpu_after}%")
+        print(f"Memory Usage: Before={mem_before:.2f}MB, After={mem_after:.2f}MB")
+
         clean_metrics(ai_response, uid, interview_doc_id)
         print("Analysis Metrics:\n", ai_response)
 
