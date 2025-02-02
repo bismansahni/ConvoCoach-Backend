@@ -43,8 +43,9 @@ def save_transcription_to_database():
 
 def create_analysis_metrics(transcription, uid, interview_doc_id):
     try:
-        cpu_before = psutil.cpu_percent(interval=1)
-        mem_before = psutil.virtual_memory().used / (1024 ** 2)
+        process = psutil.Process(os.getpid())
+        cpu_before = psutil.cpu_percent(interval=0)
+        mem_before = process.memory_info().rss / (1024 ** 2)
         prompt = (
             "For the given transcription of an interview, provide a detailed analysis by referring to the interviewee as you/yours to make the feedback sound natural and conversational. Include the following:\n"
             "1. Overall filler word count.\n"
@@ -166,8 +167,8 @@ def create_analysis_metrics(transcription, uid, interview_doc_id):
 
         ai_response =  response.choices[0].message.content
 
-        cpu_after = psutil.cpu_percent(interval=1)
-        mem_after = psutil.virtual_memory().used / (1024 ** 2)
+        cpu_after = psutil.cpu_percent(interval=0)
+        mem_after = process.memory_info().rss / (1024 ** 2)
 
         print(f"CPU Usage: Before={cpu_before}%, After={cpu_after}%")
         print(f"Memory Usage: Before={mem_before:.2f}MB, After={mem_after:.2f}MB")
