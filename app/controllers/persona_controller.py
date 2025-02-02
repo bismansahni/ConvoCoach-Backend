@@ -1,4 +1,6 @@
 import os
+
+import psutil
 import requests
 from flask import request, jsonify
 from dotenv import load_dotenv
@@ -196,8 +198,17 @@ def create_persona():
     # Make a POST request to Tavus API to create the persona
     response = requests.post(persona_url, json=persona_payload, headers=headers)
 
+    process = psutil.Process(os.getpid())
+    cpu_now_after = psutil.cpu_percent(interval=0)
+    mem_now_after = process.memory_info().rss / (1024 ** 2)
+
+    print(
+        f"CPU during persona controller before response : {cpu_now_after}, Memory during persona before response : {mem_now_after} MB")
+
     # Parse the response as JSON and extract persona_id
     response_json = response.json()
+
+
     persona_id = response_json.get("persona_id")
 
     print(response.text)  # Print the entire response for debugging
@@ -218,6 +229,13 @@ def create_persona():
         persona_id = response_json.get("persona_id")
         # Call create_conversation directly, passing candidate_name
         conversation_id, error = create_conversation(persona_id, candidate_name)
+
+        cpu_now_after = psutil.cpu_percent(interval=0)
+        mem_now_after = process.memory_info().rss / (1024 ** 2)
+
+        print(
+            f"CPU during response after create conversation controller after response : {cpu_now_after}, Memory during response after conversation controller after response : {mem_now_after} MB")
+
         if error:
             return {
                 "message": "Persona created, but failed to start conversation",

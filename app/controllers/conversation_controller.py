@@ -1,4 +1,6 @@
 import os
+
+import psutil
 import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, request, stream_with_context
@@ -44,6 +46,12 @@ def create_conversation(persona_id,candidate_name):
 
     # Make a POST request to create the conversation
     response = requests.post(conversation_url, json=conversation_payload, headers=headers)
+
+    process = psutil.Process(os.getpid())
+    cpu_now_after = psutil.cpu_percent(interval=0)
+    mem_now_after = process.memory_info().rss / (1024 ** 2)
+
+    print(f"CPU during conversation controller before response : {cpu_now_after}, Memory during conversation before response : {mem_now_after} MB")
     response_json = response.json()
 
     print("hi. we are somewhere")
@@ -51,6 +59,16 @@ def create_conversation(persona_id,candidate_name):
 
     # response = requests.request("POST", conversation_url, json=conversation_payload, headers=headers)
     # print(response.text)
+
+    # process = psutil.Process(os.getpid())
+    cpu_now_after = psutil.cpu_percent(interval=0)
+    mem_now_after = process.memory_info().rss / (1024 ** 2)
+
+    print(
+        f"CPU during conversation controller after response : {cpu_now_after}, Memory during conversation after response : {mem_now_after} MB")
+
+
+    print("hi. we are somewhere")
 
     if response.status_code == 200:
         conversation_id = response_json.get("conversation_id")

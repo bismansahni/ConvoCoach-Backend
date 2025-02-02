@@ -1,4 +1,4 @@
-
+import psutil
 from flask import Flask, request, Response, stream_with_context, url_for, jsonify
 
 from app.controllers.call_status_controller import call_status
@@ -216,6 +216,12 @@ def create_app():
     app.register_blueprint(candidate_bp)
     app.register_blueprint(credit_bp)
 
+    process = psutil.Process(os.getpid())
+    cpu_now = psutil.cpu_percent(interval=0)
+    mem_now = process.memory_info().rss / (1024 ** 2)
+
+    print(f"CPU: {cpu_now}, Memory: {mem_now} MB")
+
     # Function to print all endpoints with base URL
     def print_routes(base_url):
         with app.test_request_context():
@@ -232,5 +238,11 @@ def create_app():
 
     # Print all endpoints before returning the app
     print_routes(base_url)
+
+    process = psutil.Process(os.getpid())
+    cpu_now_after = psutil.cpu_percent(interval=0)
+    mem_now_after = process.memory_info().rss / (1024 ** 2)
+
+    print(f"CPU during init function: {cpu_now_after}, Memory during init function: {mem_now_after} MB")
 
     return app
