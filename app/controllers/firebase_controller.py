@@ -1,11 +1,25 @@
-import os
-
+from email.mime.multipart import MIMEMultipart
 
 from flask import request, jsonify
 from firebase_admin import auth, firestore
 from app.controllers.firebase_config import db
 
+import firebase_admin
+from firebase_admin import auth, credentials
+import os
+import base64
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from email.mime.text import MIMEText
+from flask import Flask, request, jsonify, redirect, url_for
 
+
+
+
+cred = credentials.Certificate("service-key.json")
+print(cred)
+# firebase_admin.initialize_app(cred)
 
 
 def login_user():
@@ -151,3 +165,240 @@ def personal_feedback():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+def send_sign_in_link_route():
+    email_data = request.get_json()
+    email = email_data.get('email')
+    redirect_url = email_data.get('redirectUrl')
+    print(email_data)
+    print(email)
+    print(redirect_url)# Frontend URL to redirect after clicking the link
+
+    # Generate the sign-in link
+    try:
+        if not isinstance(redirect_url, str):
+            raise ValueError("The redirect URL must be a string")
+        action_code_settings = auth.ActionCodeSettings(
+             url= redirect_url,
+            handle_code_in_app = True,
+    )
+        print("we are here")
+        # print(ActionCodeSettings)
+        sign_in_link = auth.generate_sign_in_with_email_link(email,action_code_settings)
+        print(sign_in_link)
+
+        # Send the sign-in link via email using Gmail API
+        return send_sign_in_link_email(email, sign_in_link)
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+SCOPES = ['https://www.googleapis.com/auth/gmail.send']
+
+def get_credentials():
+    """Retrieve or refresh OAuth credentials."""
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    return creds
+#
+# def send_sign_in_link_email(to_email, sign_in_link):
+#     """Send sign-in link email using Gmail API."""
+#     creds = get_credentials()
+#     service = build('gmail', 'v1', credentials=creds)
+#
+#     html_content = f"""
+#        <!DOCTYPE html>
+#        <html lang="en">
+#        <head>
+#            <meta charset="UTF-8">
+#            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+#            <title>Sign-In Link</title>
+#            <style>
+#                body {{
+#                    font-family: Arial, sans-serif;
+#                    background-color: #f7f7f7;
+#                    color: #333;
+#                    padding: 20px;
+#                    margin: 0;
+#                }}
+#                .email-container {{
+#                    width: 100%;
+#                    max-width: 600px;
+#                    margin: 0 auto;
+#                    background-color: #ffffff;
+#                    border-radius: 8px;
+#                    padding: 20px;
+#                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+#                }}
+#                .email-header {{
+#                    text-align: center;
+#                    padding-bottom: 20px;
+#                    border-bottom: 2px solid #f1f1f1;
+#                }}
+#                .email-header h1 {{
+#                    color: #4CAF50;
+#                    font-size: 24px;
+#                }}
+#                .email-body {{
+#                    padding-top: 20px;
+#                    text-align: center;
+#                }}
+#                .cta-button {{
+#                    background-color: #4CAF50;
+#                    color: white;
+#                    padding: 14px 30px;
+#                    text-decoration: none;
+#                    font-size: 16px;
+#                    border-radius: 5px;
+#                    display: inline-block;
+#                    margin-top: 20px;
+#                }}
+#                .email-footer {{
+#                    text-align: center;
+#                    padding-top: 30px;
+#                    font-size: 12px;
+#                    color: #999;
+#                }}
+#            </style>
+#        </head>
+#        <body>
+#            <div class="email-container">
+#                <div class="email-header">
+#                    <h1>Convocoach: Sign In</h1>
+#                </div>
+#                <div class="email-body">
+#                    <p>Hello,</p>
+#                    <p>We received a request to sign in to your Convocoach account. To complete the sign-in process, please click the link below:</p>
+#                    <a href="{sign_in_link}" class="cta-button">Sign In Now</a>
+#                    <p>If you did not request this, please ignore this email.</p>
+#                </div>
+#                <div class="email-footer">
+#                    <p>&copy; 2025 Convocoach. All rights reserved.</p>
+#                </div>
+#            </div>
+#        </body>
+#        </html>
+#        """
+#
+#     # Create the sign-in link message
+#     body = f"Click the link to sign in: {sign_in_link}"
+#     message = MIMEText(body)
+#     message['to'] = to_email
+#     message['from'] = "Convocoach <noreply@convocoach.com>"
+#     message['subject'] = "Sign-in Link"
+#
+#     # Encode the message to base64 and send
+#     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+#     message_body = {'raw': raw_message}
+#
+#     try:
+#         # Send the email
+#         service.users().messages().send(userId="me", body=message_body).execute()
+#         return jsonify({"status": "success", "message": "Sign-in link sent successfully!"}), 200
+#     except Exception as error:
+#         return jsonify({"status": "error", "message": str(error)}), 500
+
+
+def send_sign_in_link_email(to_email, sign_in_link):
+    """Send sign-in link email using Gmail API."""
+    creds = get_credentials()
+    service = build('gmail', 'v1', credentials=creds)
+
+    # Define the HTML content
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign-In Link</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+                color: #333;
+                padding: 20px;
+                margin: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                border-radius: 8px;
+                padding: 20px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }}
+            .email-header {{
+                text-align: center;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #f1f1f1;
+            }}
+            .email-header h1 {{
+                color: #4CAF50;
+                font-size: 24px;
+            }}
+            .email-body {{
+                padding-top: 20px;
+                text-align: center;
+            }}
+            .cta-button {{
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 30px;
+                text-decoration: none;
+                font-size: 16px;
+                border-radius: 5px;
+                display: inline-block;
+                margin-top: 20px;
+            }}
+            .email-footer {{
+                text-align: center;
+                padding-top: 30px;
+                font-size: 12px;
+                color: #999;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div class="email-header">
+                <h1>Convocoach: Sign In</h1>
+            </div>
+            <div class="email-body">
+                <p>Hello,</p>
+                <p>We received a request to sign in to your Convocoach account. To complete the sign-in process, please click the link below:</p>
+                <a href="{sign_in_link}" class="cta-button">Sign In Now</a>
+                <p>If you did not request this, please ignore this email.</p>
+            </div>
+            <div class="email-footer">
+                <p>&copy; 2025 Convocoach. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    # Create a multipart message
+    message = MIMEMultipart()
+    message['to'] = to_email
+    message['from'] = "Convocoach <noreply@convocoach.com>"
+    message['subject'] = "Sign-in Link"
+
+    # Attach the HTML content to the message
+    msg = MIMEText(html_content, 'html')
+    message.attach(msg)
+
+    # Encode the message to base64
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    message_body = {'raw': raw_message}
+
+    try:
+        # Send the email
+        service.users().messages().send(userId="me", body=message_body).execute()
+        return jsonify({"status": "success", "message": "Sign-in link sent successfully!"}), 200
+    except Exception as error:
+        return jsonify({"status": "error", "message": str(error)}), 500
