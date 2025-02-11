@@ -310,76 +310,205 @@ def send_sign_in_link_email(to_email, sign_in_link):
     # Define the HTML content
     html_content = f"""
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sign-In Link</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background-color: #f7f7f7;
-                color: #333;
-                padding: 20px;
-                margin: 0;
-            }}
-            .email-container {{
-                width: 100%;
-                max-width: 600px;
-                margin: 0 auto;
-                background-color: #ffffff;
-                border-radius: 8px;
-                padding: 20px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            }}
-            .email-header {{
-                text-align: center;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #f1f1f1;
-            }}
-            .email-header h1 {{
-                color: #4CAF50;
-                font-size: 24px;
-            }}
-            .email-body {{
-                padding-top: 20px;
-                text-align: center;
-            }}
-            .cta-button {{
-                background-color: #4CAF50;
-                color: white;
-                padding: 14px 30px;
-                text-decoration: none;
-                font-size: 16px;
-                border-radius: 5px;
-                display: inline-block;
-                margin-top: 20px;
-            }}
-            .email-footer {{
-                text-align: center;
-                padding-top: 30px;
-                font-size: 12px;
-                color: #999;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="email-container">
-            <div class="email-header">
-                <h1>Convocoach: Sign In</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In to ConvoCoach</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 32px 16px;
+        }}
+
+        .container {{
+            max-width: 672px;
+            margin: 0 auto;
+        }}
+
+        .email-wrapper {{
+            position: relative;
+            background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        }}
+
+        .glow {{
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: radial-gradient(circle at 50% 0%, 
+                rgba(29, 78, 216, 0.15),
+                rgba(67, 56, 202, 0.1) 30%,
+                transparent 70%) !important;
+            opacity: 0.6;
+            pointer-events: none;
+        }}
+
+        .logo-section {{
+            text-align: center;
+            margin-bottom: 32px;
+        }}
+
+        .logo-container {{
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .logo {{
+            width: 40px;
+            height: 40px;
+        }}
+
+        .brand-name {{
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }}
+
+        .brand-name-dark {{
+            color: #0f172a;
+        }}
+
+        .brand-name-gradient {{
+            background: linear-gradient(135deg, #1d4ed8, #4338ca);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }}
+
+        .content {{
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }}
+
+        .title {{
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }}
+
+        .description {{
+            color: #475569;
+            margin-bottom: 24px;
+        }}
+
+        .button {{
+            display: inline-block;
+            background: linear-gradient(135deg, #1d4ed8, #4338ca);
+            color: white !important;;
+            text-decoration: none;
+            padding: 12px 32px;
+            border-radius: 12px;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(29, 78, 216, 0.2);
+            transition: all 0.3s ease;
+        }}
+
+        .button:hover {{
+            background: linear-gradient(135deg, #1e40af, #3730a3);
+            transform: translateY(-1px);
+            box-shadow: 0 15px 20px -3px rgba(29, 78, 216, 0.3);
+        }}
+
+        .security-notice {{
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 32px;
+        }}
+
+        .security-notice p {{
+            margin-bottom: 8px;
+        }}
+
+        .footer {{
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+        }}
+
+        .footer p {{
+            margin-bottom: 4px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="email-wrapper">
+            <div class="glow"></div>
+            
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo-container">
+                    <svg class="logo" viewBox="0 0 706 646" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="30.62" y1="611.11" x2="422.65" y2="219.09" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="#1d4ed8"/>
+                                <stop offset=".98" stop-color="#4338ca"/>
+                            </linearGradient>
+                        </defs>
+                        <circle fill="#4338ca" cx="513.87" cy="203.93" r="191.98"/>
+                        <path fill="url(#logo-gradient)" d="M225.31,21.8c-26.01-27.64-69.94-29.41-97.14-2.94C59.35,85.86,0,208.75,0,306.01l3.2,227.67c0,55.23,34.26,112.24,114.14,112.24h343.69c39.35,0,71.25-31.9,71.25-71.25h0c0-35.78-26.59-65.87-62.05-70.63C215.38,469.81,174.18,223.88,235.88,101.88c13.39-26.48,9.91-58.31-10.42-79.92l-.15-.16Z"/>
+                    </svg>
+                    <h1 class="brand-name">
+                        <span class="brand-name-dark">Convo</span>
+                        <span class="brand-name-gradient">Coach</span>
+                    </h1>
+                </div>
             </div>
-            <div class="email-body">
-                <p>Hello,</p>
-                <p>We received a request to sign in to your Convocoach account. To complete the sign-in process, please click the link below:</p>
-                <a href="{sign_in_link}" class="cta-button">Sign In Now</a>
-                <p>If you did not request this, please ignore this email.</p>
+
+            <!-- Email Content -->
+            <div class="content">
+                <h2 class="title">Sign in to ConvoCoach</h2>
+                <p class="description">Click the button below to securely sign in to your account.</p>
+
+                <!-- Action Button -->
+                <a href="{sign_in_link}" class="button">Sign in securely</a>
+
+                <!-- Security Notice -->
+                <div class="security-notice">
+                    <p>This sign-in link will expire in 5 minutes.</p>
+                    <p>If you didn't request this email, please ignore it.</p>
+                </div>
             </div>
-            <div class="email-footer">
-                <p>&copy; 2025 Convocoach. All rights reserved.</p>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>&copy; 2025 ConvoCoach. All rights reserved.</p>
+                <p>This email was sent to {to_email}</p>
+                <p> Do not reply to this email.</p>
             </div>
         </div>
-    </body>
-    </html>
+    </div>
+</body>
+</html>
     """
 
     # Create a multipart message
