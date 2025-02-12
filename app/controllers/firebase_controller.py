@@ -309,77 +309,68 @@ def send_sign_in_link_email(to_email, sign_in_link):
 
     # Define the HTML content
     html_content = f"""
-  <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sign-In Link</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background-color: #f7f7f7;
-                color: #333;
-                padding: 20px;
-                margin: 0;
-            }}
-            .email-container {{
-                width: 100%;
-                max-width: 600px;
-                margin: 0 auto;
-                background-color: #ffffff;
-                border-radius: 8px;
-                padding: 20px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            }}
-            .email-header {{
-                text-align: center;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #f1f1f1;
-            }}
-            .email-header h1 {{
-                color: #1d4ed8;
-                font-size: 24px;
-            }}
-            .email-body {{
-                padding-top: 20px;
-                text-align: center;
-            }}
-            .cta-button {{
-                background-color: #1d4ed8;
-                color: white !important;
-                padding: 14px 30px;
-                text-decoration: none;
-                font-size: 16px;
-                border-radius: 5px;
-                display: inline-block;
-                margin-top: 20px;
-            }}
-            .email-footer {{
-                text-align: center;
-                padding-top: 30px;
-                font-size: 12px;
-                color: #999;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="email-container">
-            <div class="email-header">
-                <h1>Convocoach: Sign In</h1>
-            </div>
-            <div class="email-body">
-                <p>Hello,</p>
-                <p>We received a request to sign in to your Convocoach account. To complete the sign-in process, please click the link below:</p>
-                <a href="{sign_in_link}" class="cta-button">Sign In Now</a>
-                <p>If you did not request this, please ignore this email.</p>
-            </div>
-            <div class="email-footer">
-                <p>&copy; 2025 Convocoach. All rights reserved.</p>
-            </div>
-        </div>
-    </body>
-    </html>
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In to ConvoCoach</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8fafc; color: #1e293b; padding: 32px 16px; margin: 0;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background: white; border-radius: 16px; padding: 32px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <!-- Logo Section -->
+                    <tr>
+                        <td align="center" style="padding-bottom: 24px;">
+                            <img src="https://i.imgur.com/i6u4QMH.png" width="50" height="50" alt="ConvoCoach Logo" style="display: block;">
+                            <h1 style="margin: 0; font-size: 24px; font-weight: bold; color: #0f172a;">Convo<span style="color: #1d4ed8;">Coach</span></h1>
+                        </td>
+                    </tr>
+                      <!-- Email Content -->
+                    <tr>
+                        <td align="center" style="padding-bottom: 16px;">
+                            <h2 style="font-size: 20px; font-weight: 600; color: #0f172a; margin-bottom: 8px;">Sign in to ConvoCoach</h2>
+                            <p style="color: #475569; font-size: 16px; margin-bottom: 24px;">Click the button below to securely sign in to your account.</p>
+                        </td>
+                    </tr>
+
+                    <!-- Sign-In Button -->
+                    <tr>
+                        <td align="center">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="background: #1d4ed8; padding: 12px 32px; border-radius: 12px;">
+                                        <a href="{sign_in_link}" style="color: white; text-decoration: none; font-weight: 500; font-size: 16px;">Sign in securely</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Security Notice -->
+                    <tr>
+                        <td align="center" style="padding-top: 24px; font-size: 14px; color: #64748b;">
+                            <p style="margin-bottom: 8px;">This sign-in link will expire in 5 minutes.</p>
+                            <p>If you didn't request this email, please ignore it.</p>
+                        </td>
+                    </tr>
+                     <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding-top: 24px; border-top: 1px solid #e2e8f0; font-size: 14px; color: #64748b;">
+                            <p>&copy; 2025 ConvoCoach. All rights reserved.</p>
+                            <p>This email was sent to {to_email}</p>
+                            <p>Do not reply to this email.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
     """
 
     # Create a multipart message
