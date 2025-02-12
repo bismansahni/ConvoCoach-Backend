@@ -347,7 +347,7 @@ def send_sign_in_link_email(to_email, sign_in_link):
             }}
             .cta-button {{
                 background-color: #1d4ed8;
-                color: white;
+                color: white !important;
                 padding: 14px 30px;
                 text-decoration: none;
                 font-size: 16px;
