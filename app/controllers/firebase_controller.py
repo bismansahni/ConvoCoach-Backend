@@ -1,3 +1,4 @@
+import urllib.parse
 from email.mime.multipart import MIMEMultipart
 
 from flask import request, jsonify
@@ -307,6 +308,9 @@ def send_sign_in_link_email(to_email, sign_in_link):
     creds = get_credentials()
     service = build('gmail', 'v1', credentials=creds)
 
+    encoded_email = urllib.parse.quote(to_email)
+    sign_in_link_with_email = f"{sign_in_link}&email={encoded_email}"
+
     # Define the HTML content
     html_content = f"""
   <!DOCTYPE html>
@@ -371,7 +375,7 @@ def send_sign_in_link_email(to_email, sign_in_link):
             <div class="email-body">
                 <p>Hello,</p>
                 <p>We received a request to sign in to your Convocoach account. To complete the sign-in process, please click the link below:</p>
-                <a href="{sign_in_link}" class="cta-button">Sign In Now</a>
+                <a href="{sign_in_link_with_email}" class="cta-button">Sign In Now</a>
                 <p>If you did not request this, please ignore this email.</p>
             </div>
             <div class="email-footer">
