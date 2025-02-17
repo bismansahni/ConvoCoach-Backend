@@ -4,8 +4,12 @@
 
 from flask import Blueprint, request, jsonify
 from app.controllers.persona_controller import create_persona
+from app.helper.authHelper import apply_authentication
 
 persona_bp = Blueprint('persona_bp', __name__)
+
+
+apply_authentication(persona_bp)
 
 # Route to handle persona creation request from client
 @persona_bp.route('/create/persona', methods=['POST'])
