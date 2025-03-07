@@ -181,8 +181,9 @@ def create_persona():
             # },
             "vqa": {"enable_vision": "true"},
             "stt": {
-                "participant_pause_sensitivity": "low",
-                "participant_interrupt_sensitivity": "low",
+                "smart_turn_detection": True,
+                "participant_pause_sensitivity": "high",
+                "participant_interrupt_sensitivity": "high",
                 "stt_engine": "tavus-advanced"
             }
         }
