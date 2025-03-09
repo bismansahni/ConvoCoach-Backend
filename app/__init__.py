@@ -1,7 +1,7 @@
 import psutil
 from flask import Flask, request, Response, stream_with_context, url_for, jsonify
 
-from app.controllers.basic_logging_in_file import *
+from app.controllers.firebase_logs_handler import *
 from app.controllers.call_status_controller import call_status
 from app.routes.additional_transcription_routes import additional_transcription_bp
 from app.routes.call_status_routes import call_status_bp
