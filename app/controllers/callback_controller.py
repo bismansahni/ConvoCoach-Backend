@@ -19,6 +19,9 @@ def tavus_callback(request):
         if event_type == "application.transcription_ready":
             conversation_id = data.get("conversation_id")
             transcript = data['properties'].get('transcript', [])
+            print("length of raw transcript", len(transcript))
+            print("raw transcript", transcript)
+
             print(f"Processing transcription for conversation {conversation_id}")
 
             # Prepare the output JSON structure
