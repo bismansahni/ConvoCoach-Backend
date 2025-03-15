@@ -20,7 +20,9 @@ def tavus_callback(request):
             conversation_id = data.get("conversation_id")
             transcript = data['properties'].get('transcript', [])
             print("length of raw transcript", len(transcript))
-            print("raw transcript", transcript)
+            print("raw transcript   : ", transcript)
+            raw_transcript_str = json.dumps(transcript)
+            print("length of raw transcript", len(raw_transcript_str))
 
             print(f"Processing transcription for conversation {conversation_id}")
 
